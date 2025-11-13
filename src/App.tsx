@@ -1,5 +1,17 @@
 import liff from '@line/liff';
 import { useEffect } from 'react';
+import { RouterProvider, createRouter } from '@tanstack/react-router';
+import { routeTree } from './routeTree.gen';
+
+const router = createRouter({ routeTree });
+
+// TanStack Router 型別安全的起手式
+
+declare module '@tanstack/react-router' {
+  interface Register {
+    router: typeof router;
+  }
+}
 
 function App() {
   useEffect(() => {
@@ -9,7 +21,8 @@ function App() {
       }
     });
   }, []);
-  return <div className='bg-red-500'>123</div>;
+
+  return <RouterProvider router={router} />;
 }
 
 export default App;
