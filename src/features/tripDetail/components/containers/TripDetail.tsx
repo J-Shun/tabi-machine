@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from '@tanstack/react-router';
+import { useParams } from '@tanstack/react-router';
 
 interface Trip {
   id: string;
@@ -14,20 +15,19 @@ const TripDetail = () => {
   const navigate = useNavigate();
   const [trip, setTrip] = useState<Trip | null>(null);
 
-  const mockTripId = '1'; // 這裡應該從路由參數取得
+  const { tripId } = useParams({ from: '/tripDetail/$tripId/' });
 
   useEffect(() => {
-    // 這裡應該從 localStorage 或狀態管理載入行程資料
     // 暫時使用 mock 資料
     const mockTrip: Trip = {
-      id: mockTripId,
+      id: tripId,
       name: '東京五日遊',
       startDate: '2025-01-01',
       endDate: '2025-01-05',
       country: '日本',
     };
     setTrip(mockTrip);
-  }, []);
+  }, [tripId]);
 
   const handleBack = () => {
     navigate({ to: '/' });

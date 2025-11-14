@@ -34,7 +34,7 @@ const Dashboard = () => {
     <div className='min-h-screen bg-linear-to-br from-blue-50 to-indigo-100'>
       {/* 頂部區域 */}
       <div className='pt-8 pb-6 px-6 bg-white/80 backdrop-blur-sm'>
-        <div className='text-center'>
+        <div className='text-center select-none'>
           <div className='text-4xl mb-2'>✈️</div>
           <h1 className='text-2xl font-bold text-gray-800 mb-1'>我的旅程</h1>
           <p className='text-gray-600 text-sm'>開始規劃你的下一趟冒險</p>
@@ -45,7 +45,7 @@ const Dashboard = () => {
       <div className='px-6 mb-6'>
         <button
           onClick={() => setShowCreateModal(true)}
-          className='w-full bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-all active:scale-[0.98] mt-4'
+          className='w-full bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-all active:scale-[0.98] mt-4 cursor-pointer'
         >
           <div className='flex items-center justify-center space-x-3'>
             <div className='w-12 h-12 bg-linear-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center'>
@@ -75,7 +75,7 @@ const Dashboard = () => {
             ))}
           </div>
         ) : (
-          <div className='text-center py-12'>
+          <div className='text-center py-12 select-none'>
             <div className='text-6xl mb-4'>🗺️</div>
             <h3 className='text-lg font-semibold text-gray-700 mb-2'>
               還沒有任何行程

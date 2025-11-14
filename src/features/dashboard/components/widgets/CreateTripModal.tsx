@@ -13,7 +13,7 @@ interface Props {
   onSubmit: (trip: TripForm) => void;
 }
 
-const CreateTripModal: React.FC<Props> = ({ onClose, onSubmit }) => {
+const CreateTripModal = ({ onClose, onSubmit }: Props) => {
   const [form, setForm] = useState<TripForm>({
     name: '',
     startDate: '',
@@ -70,17 +70,16 @@ const CreateTripModal: React.FC<Props> = ({ onClose, onSubmit }) => {
     const deltaY = currentY - startY;
     setIsDragging(false);
 
-    if (modalRef.current) {
-      // 如果拖拉距離超過 100px，就關閉彈窗
-      if (deltaY > 100) {
-        modalRef.current.style.transform = 'translateY(100%)';
-        setTimeout(() => {
-          onClose();
-        }, 200);
-      } else {
-        // 否則回到原位
-        modalRef.current.style.transform = 'translateY(0px)';
-      }
+    if (!modalRef.current) return;
+
+    // 如果拖拉距離超過 100px，就關閉彈窗，否則回到原位
+    if (deltaY > 100) {
+      modalRef.current.style.transform = 'translateY(100%)';
+      setTimeout(() => {
+        onClose();
+      }, 200);
+    } else {
+      modalRef.current.style.transform = 'translateY(0px)';
     }
   };
 
@@ -111,15 +110,15 @@ const CreateTripModal: React.FC<Props> = ({ onClose, onSubmit }) => {
     const deltaY = currentY - startY;
     setIsDragging(false);
 
-    if (modalRef.current) {
-      if (deltaY > 100) {
-        modalRef.current.style.transform = 'translateY(100%)';
-        setTimeout(() => {
-          onClose();
-        }, 200);
-      } else {
-        modalRef.current.style.transform = 'translateY(0px)';
-      }
+    if (!modalRef.current) return;
+
+    if (deltaY > 100) {
+      modalRef.current.style.transform = 'translateY(100%)';
+      setTimeout(() => {
+        onClose();
+      }, 200);
+    } else {
+      modalRef.current.style.transform = 'translateY(0px)';
     }
   }, [isDragging, currentY, startY, onClose]);
 
@@ -261,7 +260,7 @@ const CreateTripModal: React.FC<Props> = ({ onClose, onSubmit }) => {
 
               {/* 圖片預覽或上傳區域 */}
               <div className='relative'>
-                {form.coverImage ? (
+                {form.coverImage && (
                   <div className='relative'>
                     <img
                       src={form.coverImage}
@@ -276,7 +275,9 @@ const CreateTripModal: React.FC<Props> = ({ onClose, onSubmit }) => {
                       ✕
                     </button>
                   </div>
-                ) : (
+                )}
+
+                {!form.coverImage && (
                   <label className='block w-full h-40 border-2 border-dashed border-gray-300 rounded-2xl cursor-pointer hover:border-blue-400 hover:bg-blue-50/50 transition-all'>
                     <div className='flex flex-col items-center justify-center h-full'>
                       <span className='text-sm text-gray-600 font-medium'>
@@ -305,14 +306,14 @@ const CreateTripModal: React.FC<Props> = ({ onClose, onSubmit }) => {
             <button
               type='button'
               onClick={onClose}
-              className='flex-1 py-3 px-4 text-gray-600 bg-white border border-gray-200 rounded-xl font-medium hover:bg-gray-50 active:scale-[0.98] transition-all'
+              className='flex-1 py-3 text-gray-600 bg-white border border-gray-200 rounded-xl font-medium hover:bg-gray-50 active:scale-[0.98] transition-all cursor-pointer'
             >
               取消
             </button>
             <button
               onClick={handleSubmit}
               disabled={!form.name || !form.startDate || !form.endDate}
-              className='flex-2 py-3 px-6 bg-linear-to-r from-blue-500 to-blue-600 text-white rounded-xl font-medium hover:from-blue-600 hover:to-blue-700 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed'
+              className='flex-1 py-3 bg-linear-to-r from-blue-500 to-blue-600 text-white rounded-xl font-medium hover:from-blue-600 hover:to-blue-700 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer'
             >
               建立行程
             </button>
