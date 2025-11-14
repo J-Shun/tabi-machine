@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import CreateTripModal from '../widgets/CreateTripModal';
 import TripCard from '../widgets/TripCard';
+import useTrips from '../hooks/useTrips';
+import { createUUID } from '../../../../helpers';
 
 interface Trip {
   id: string;
@@ -14,8 +16,11 @@ interface Trip {
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const [trips, setTrips] = useState<Trip[]>([]);
+  const { trips, createTrip } = useTrips();
+
   const [showCreateModal, setShowCreateModal] = useState(false);
+
+  const isTripsExist = trips.length > 0;
 
   const handleTripSelect = (trip: Trip) => {
     navigate({ to: '/tripDetail/' + trip.id });
@@ -24,9 +29,9 @@ const Dashboard = () => {
   const handleCreateTrip = (newTrip: Omit<Trip, 'id'>) => {
     const trip: Trip = {
       ...newTrip,
-      id: Date.now().toString(),
+      id: createUUID(),
     };
-    setTrips([...trips, trip]);
+    createTrip(trip);
     setShowCreateModal(false);
   };
 
@@ -61,7 +66,7 @@ const Dashboard = () => {
 
       {/* 行程列表 */}
       <div className='px-6 pb-8'>
-        {trips.length > 0 ? (
+        {isTripsExist && (
           <div className='space-y-4'>
             <h2 className='text-lg font-semibold text-gray-700 mb-4'>
               我的行程
@@ -74,7 +79,9 @@ const Dashboard = () => {
               />
             ))}
           </div>
-        ) : (
+        )}
+
+        {!isTripsExist && (
           <div className='text-center py-12 select-none'>
             <div className='text-6xl mb-4'>🗺️</div>
             <h3 className='text-lg font-semibold text-gray-700 mb-2'>

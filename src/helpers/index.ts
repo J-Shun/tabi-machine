@@ -1,3 +1,7 @@
+export const createUUID = () => {
+  return crypto.randomUUID();
+};
+
 // 格式化日期為 MM/DD 格式
 export const formatDate = (dateString: string) => {
   const date = new Date(dateString);
