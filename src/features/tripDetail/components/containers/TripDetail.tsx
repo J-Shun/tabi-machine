@@ -1,43 +1,23 @@
-import { useState, useEffect } from 'react';
+// import { useState, useEffect } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import { useParams } from '@tanstack/react-router';
-
-interface Trip {
-  id: string;
-  name: string;
-  startDate: string;
-  endDate: string;
-  country?: string;
-  coverImage?: string;
-}
+import useTripDetail from '../../hooks/useTripDetail';
 
 const TripDetail = () => {
   const navigate = useNavigate();
-  const [trip, setTrip] = useState<Trip | null>(null);
 
   const { tripId } = useParams({ from: '/tripDetail/$tripId/' });
-
-  useEffect(() => {
-    // 暫時使用 mock 資料
-    const mockTrip: Trip = {
-      id: tripId,
-      name: '東京五日遊',
-      startDate: '2025-01-01',
-      endDate: '2025-01-05',
-      country: '日本',
-    };
-    setTrip(mockTrip);
-  }, [tripId]);
+  const { tripDetail } = useTripDetail({ tripId });
 
   const handleBack = () => {
     navigate({ to: '/' });
   };
 
   const getDates = () => {
-    if (!trip) return [];
+    if (!tripDetail) return [];
     const dates = [];
-    const start = new Date(trip.startDate);
-    const end = new Date(trip.endDate);
+    const start = new Date(tripDetail.startDate);
+    const end = new Date(tripDetail.endDate);
 
     for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
       dates.push(new Date(d).toISOString().split('T')[0]);
@@ -45,7 +25,7 @@ const TripDetail = () => {
     return dates;
   };
 
-  if (!trip) {
+  if (!tripDetail) {
     return (
       <div className='flex items-center justify-center min-h-screen'>
         <div>載入中...</div>
@@ -57,10 +37,10 @@ const TripDetail = () => {
     <div className='min-h-screen bg-gray-50'>
       {/* 標題列 */}
       <div className='bg-white shadow-sm p-4 flex items-center'>
-        <button onClick={handleBack} className='mr-3 text-xl'>
+        <button onClick={handleBack} className='mr-3 text-xl cursor-pointer'>
           ←
         </button>
-        <h1 className='text-lg font-bold'>{trip.name}</h1>
+        <h1 className='text-lg font-bold'>{tripDetail.name}</h1>
       </div>
 
       {/* 行程日期區段 */}
@@ -82,7 +62,7 @@ const TripDetail = () => {
 
       {/* 新增按鈕 */}
       <div className='fixed bottom-6 right-6'>
-        <button className='w-14 h-14 bg-blue-500 rounded-full flex items-center justify-center shadow-lg hover:bg-blue-600'>
+        <button className='w-14 h-14 bg-blue-500 rounded-full flex items-center justify-center shadow-lg hover:bg-blue-600 cursor-pointer'>
           <span className='text-white text-2xl'>+</span>
         </button>
       </div>

@@ -5,14 +5,7 @@ import TripCard from '../widgets/TripCard';
 import useTrips from '../hooks/useTrips';
 import { createUUID } from '../../../../helpers';
 
-interface Trip {
-  id: string;
-  name: string;
-  startDate: string;
-  endDate: string;
-  country?: string;
-  coverImage?: string;
-}
+import type { Trip } from '../../../../types';
 
 const Dashboard = () => {
   const navigate = useNavigate();
