@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from '@tanstack/react-router';
-import CreateTripModal from '../widgets/CreateTripModal';
+import TripFormModal from '../widgets/TripFormModal';
 import TripCard from '../widgets/TripCard';
 import useTrips from '../hooks/useTrips';
 import { createUUID } from '../../../../helpers';
@@ -9,23 +9,50 @@ import type { Trip } from '../../../../types';
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const { trips, createTrip } = useTrips();
+  const { trips, createTrip, editTrip, deleteTrip } = useTrips();
 
-  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [isShowTripFormModal, setIsShowTripFormModal] = useState(false);
+  const [editingTripForm, setEditingTripForm] = useState<Trip | null>(null);
 
   const isTripsExist = trips.length > 0;
 
-  const handleTripSelect = (trip: Trip) => {
-    navigate({ to: '/tripDetail/' + trip.id });
+  const handleTripSelect = (tripId: string) => {
+    navigate({ to: '/tripDetail/' + tripId });
   };
 
-  const handleCreateTrip = (newTrip: Omit<Trip, 'id'>) => {
-    const trip: Trip = {
-      ...newTrip,
-      id: createUUID(),
-    };
-    createTrip(trip);
-    setShowCreateModal(false);
+  const handleSubmit = (newTrip: Trip) => {
+    const { id } = newTrip;
+    // 沒有 id，代表是建立新行程
+    if (!id) {
+      const trip: Trip = {
+        ...newTrip,
+        id: createUUID(),
+      };
+      createTrip(trip);
+    } else {
+      // 有 id，代表是編輯行程
+      editTrip(newTrip);
+    }
+
+    setIsShowTripFormModal(false);
+    setEditingTripForm(null);
+  };
+
+  const handleClose = () => {
+    setIsShowTripFormModal(false);
+    setEditingTripForm(null);
+  };
+
+  const handleEditTrip = (tripId: string) => {
+    setIsShowTripFormModal(true);
+    const trip = trips.find((t) => t.id === tripId);
+    setEditingTripForm(trip as Trip);
+  };
+
+  const handleDelete = (tripId: string) => {
+    if (window.confirm('確定要刪除此行程嗎？此動作無法復原。')) {
+      deleteTrip(tripId);
+    }
   };
 
   return (
@@ -42,7 +69,7 @@ const Dashboard = () => {
       {/* 新增行程按鈕 */}
       <div className='px-6 mb-6'>
         <button
-          onClick={() => setShowCreateModal(true)}
+          onClick={() => setIsShowTripFormModal(true)}
           className='w-full bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-all active:scale-[0.98] mt-4 cursor-pointer'
         >
           <div className='flex items-center justify-center space-x-3'>
@@ -68,7 +95,9 @@ const Dashboard = () => {
               <TripCard
                 key={trip.id}
                 trip={trip}
-                onClick={() => handleTripSelect(trip)}
+                onClick={() => handleTripSelect(trip.id)}
+                onEdit={() => handleEditTrip(trip.id)}
+                onDelete={() => handleDelete(trip.id)}
               />
             ))}
           </div>
@@ -90,10 +119,12 @@ const Dashboard = () => {
       </div>
 
       {/* 建立行程彈窗 */}
-      {showCreateModal && (
-        <CreateTripModal
-          onClose={() => setShowCreateModal(false)}
-          onSubmit={handleCreateTrip}
+      {isShowTripFormModal && (
+        <TripFormModal
+          tripData={editingTripForm}
+          onClose={handleClose}
+          onSubmit={handleSubmit}
+          mode={editingTripForm ? 'edit' : 'create'}
         />
       )}
     </div>

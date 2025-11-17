@@ -1,31 +1,29 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-
-interface TripForm {
-  name: string;
-  startDate: string;
-  endDate: string;
-  country?: string;
-  coverImage?: string;
-}
+import type { Trip } from '../../../../types';
 
 interface Props {
+  tripData: Trip | null;
+  mode: 'create' | 'edit';
   onClose: () => void;
-  onSubmit: (trip: TripForm) => void;
+  onSubmit: (trip: Trip) => void;
 }
 
-const CreateTripModal = ({ onClose, onSubmit }: Props) => {
-  const [form, setForm] = useState<TripForm>({
-    name: '',
-    startDate: '',
-    endDate: '',
-    country: '',
-    coverImage: '',
+const TripFormModal = ({ tripData, mode, onClose, onSubmit }: Props) => {
+  const [form, setForm] = useState<Trip>({
+    name: tripData?.name || '',
+    startDate: tripData?.startDate || '',
+    endDate: tripData?.endDate || '',
+    country: tripData?.country || '',
+    coverImage: tripData?.coverImage || '',
+    id: tripData?.id || '',
   });
 
   const [isDragging, setIsDragging] = useState(false);
   const [startY, setStartY] = useState(0);
   const [currentY, setCurrentY] = useState(0);
   const modalRef = useRef<HTMLDivElement>(null);
+
+  const confirmText = mode === 'create' ? '建立行程' : '更新行程';
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -315,7 +313,7 @@ const CreateTripModal = ({ onClose, onSubmit }: Props) => {
               disabled={!form.name || !form.startDate || !form.endDate}
               className='flex-1 py-3 bg-linear-to-r from-blue-500 to-blue-600 text-white rounded-xl font-medium hover:from-blue-600 hover:to-blue-700 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer'
             >
-              建立行程
+              {confirmText}
             </button>
           </div>
         </div>
@@ -324,4 +322,4 @@ const CreateTripModal = ({ onClose, onSubmit }: Props) => {
   );
 };
 
-export default CreateTripModal;
+export default TripFormModal;

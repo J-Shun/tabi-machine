@@ -24,6 +24,32 @@ const useTrips = () => {
     }
   };
 
+  const editTrip = (updatedTrip: Trip) => {
+    try {
+      const { id } = updatedTrip;
+
+      // 更新指定 id 的行程資料
+      const payload = trips.map((trip) =>
+        trip.id === id ? { ...trip, ...updatedTrip } : trip
+      );
+
+      localStorage.setItem('trips', JSON.stringify(payload));
+      setTrips(payload);
+    } catch (error) {
+      console.error('Failed to edit trip:', error);
+    }
+  };
+
+  const deleteTrip = (tripId: string) => {
+    try {
+      const payload = trips.filter((trip) => trip.id !== tripId);
+      localStorage.setItem('trips', JSON.stringify(payload));
+      setTrips(payload);
+    } catch (error) {
+      console.error('Failed to delete trip:', error);
+    }
+  };
+
   const loadTrips = async () => {
     try {
       // 模仿一點載入時間
@@ -49,7 +75,7 @@ const useTrips = () => {
     init();
   }, []);
 
-  return { trips, isLoading, createTrip };
+  return { trips, isLoading, createTrip, editTrip, deleteTrip };
 };
 
 export default useTrips;

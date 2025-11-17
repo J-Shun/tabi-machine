@@ -19,9 +19,11 @@ const TripDetail = () => {
     const start = new Date(tripDetail.startDate);
     const end = new Date(tripDetail.endDate);
 
-    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-      dates.push(new Date(d).toISOString().split('T')[0]);
+    for (let d = start; d <= end; d.setDate(d.getDate() + 1)) {
+      const formattedDate = d.toLocaleDateString('zh-TW');
+      dates.push(formattedDate);
     }
+
     return dates;
   };
 
@@ -51,7 +53,7 @@ const TripDetail = () => {
             className='bg-white rounded-lg shadow-sm border border-gray-200 p-4'
           >
             <h2 className='text-lg font-semibold mb-4'>
-              Day {index + 1} - {new Date(date).toLocaleDateString('zh-TW')}
+              Day {index + 1} - {date}
             </h2>
             <div className='text-center py-8 text-gray-400'>
               點擊 + 新增行程項目
