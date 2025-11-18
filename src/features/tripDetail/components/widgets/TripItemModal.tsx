@@ -1,21 +1,29 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import type { Trip } from '../../../../types';
 
-interface Props {
-  tripData: Trip | null;
-  mode: 'create' | 'edit';
-  onClose: () => void;
-  onSubmit: (trip: Trip) => void;
+interface TripItem {
+  id: string;
+  time: string;
+  title: string;
+  location: string;
+  type: 'meal' | 'attraction' | 'shopping' | 'transport' | 'other';
+  notes?: string;
 }
 
-const TripFormModal = ({ tripData, mode, onClose, onSubmit }: Props) => {
-  const [form, setForm] = useState<Trip>({
-    name: tripData?.name || '',
-    startDate: tripData?.startDate || '',
-    endDate: tripData?.endDate || '',
-    country: tripData?.country || '',
-    coverImage: tripData?.coverImage || '',
-    id: tripData?.id || '',
+interface Props {
+  itemData: TripItem | null;
+  mode: 'create' | 'edit';
+  onClose: () => void;
+  onSubmit: (item: TripItem) => void;
+}
+
+const TripItemModal = ({ itemData, mode, onClose, onSubmit }: Props) => {
+  const [form, setForm] = useState<TripItem>({
+    id: itemData?.id || '',
+    time: itemData?.time || '',
+    title: itemData?.title || '',
+    location: itemData?.location || '',
+    type: itemData?.type || 'other',
+    notes: itemData?.notes || '',
   });
 
   const [isDragging, setIsDragging] = useState(false);
@@ -24,7 +32,7 @@ const TripFormModal = ({ tripData, mode, onClose, onSubmit }: Props) => {
   const [isClosing, setIsClosing] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
 
-  const confirmText = mode === 'create' ? '建立行程' : '更新行程';
+  const confirmText = mode === 'create' ? '新增項目' : '更新項目';
 
   // 關閉動畫處理
   const handleClose = useCallback(() => {
@@ -39,22 +47,19 @@ const TripFormModal = ({ tripData, mode, onClose, onSubmit }: Props) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (form.name && form.startDate && form.endDate) {
+    if (form.title && form.time) {
       onSubmit(form);
       handleClose();
     }
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        setForm({ ...form, coverImage: event.target?.result as string });
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+  const getTypeOptions = () => [
+    { value: 'meal', label: '用餐', icon: '🍽️' },
+    { value: 'attraction', label: '景點', icon: '🏛️' },
+    { value: 'shopping', label: '購物', icon: '🛍️' },
+    { value: 'transport', label: '交通', icon: '🚗' },
+    { value: 'other', label: '其他', icon: '📍' },
+  ];
 
   // 觸控滑動處理
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -185,140 +190,108 @@ const TripFormModal = ({ tripData, mode, onClose, onSubmit }: Props) => {
         {/* 標題區域 */}
         <div className='px-6 py-4 border-b border-gray-100'>
           <div className='text-center'>
-            <div className='text-3xl mb-2'>✈️</div>
+            <div className='text-3xl mb-2'>📝</div>
             <h2 className='text-xl font-bold text-gray-800 mb-1'>
-              {mode === 'create' ? '建立新行程' : '編輯行程'}
+              {mode === 'create' ? '新增行程項目' : '編輯行程項目'}
             </h2>
-            <p className='text-sm text-gray-500'>
-              {mode === 'create' ? '開始規劃你的精彩旅程' : '修改你的旅程規劃'}
-            </p>
+            <p className='text-sm text-gray-500'>記錄你的旅程細節</p>
           </div>
         </div>
 
         {/* 表單內容 */}
         <div className='max-h-[60vh] overflow-y-auto'>
           <form onSubmit={handleSubmit} className='p-6 space-y-6'>
-            {/* 行程名稱 */}
+            {/* 項目標題 */}
             <div>
               <div className='flex items-center space-x-2 mb-3'>
                 <label className='text-base font-semibold text-gray-800'>
-                  行程名稱
+                  項目名稱
                 </label>
                 <span className='text-red-400'>*</span>
               </div>
               <input
                 type='text'
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                value={form.title}
+                onChange={(e) => setForm({ ...form, title: e.target.value })}
                 className='w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition-all'
-                placeholder='例：東京櫻花之旅'
+                placeholder='例：故宮博物院參觀'
                 required
               />
             </div>
 
-            {/* 旅行日期 */}
-            <div>
-              <div className='flex items-center space-x-2 mb-3'>
-                <label className='text-base font-semibold text-gray-800'>
-                  旅行日期
-                </label>
-                <span className='text-red-400'>*</span>
+            {/* 時間和類型 */}
+            <div className='grid grid-cols-2 gap-3'>
+              <div>
+                <div className='flex items-center space-x-2 mb-3'>
+                  <label className='text-base font-semibold text-gray-800'>
+                    時間
+                  </label>
+                  <span className='text-red-400'>*</span>
+                </div>
+                <input
+                  type='time'
+                  value={form.time}
+                  onChange={(e) => setForm({ ...form, time: e.target.value })}
+                  className='w-full px-3 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition-all'
+                  required
+                />
               </div>
-              <div className='grid grid-cols-2 gap-3'>
-                <div>
-                  <label className='block text-sm text-gray-600 mb-2'>
-                    出發日
+
+              <div>
+                <div className='flex items-center space-x-2 mb-3'>
+                  <label className='text-base font-semibold text-gray-800'>
+                    類型
                   </label>
-                  <input
-                    type='date'
-                    value={form.startDate}
-                    onChange={(e) =>
-                      setForm({ ...form, startDate: e.target.value })
-                    }
-                    className='w-full px-3 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition-all text-sm'
-                    required
-                  />
                 </div>
-                <div>
-                  <label className='block text-sm text-gray-600 mb-2'>
-                    回程日
-                  </label>
-                  <input
-                    type='date'
-                    value={form.endDate}
-                    onChange={(e) =>
-                      setForm({ ...form, endDate: e.target.value })
-                    }
-                    className='w-full px-3 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition-all text-sm'
-                    min={form.startDate}
-                    required
-                  />
-                </div>
+                <select
+                  value={form.type}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      type: e.target.value as TripItem['type'],
+                    })
+                  }
+                  className='w-full px-3 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition-all'
+                >
+                  {getTypeOptions().map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.icon} {option.label}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
 
-            {/* 目的地國家 */}
+            {/* 地點 */}
             <div>
               <div className='flex items-center space-x-2 mb-3'>
                 <label className='text-base font-semibold text-gray-800'>
-                  目的地
+                  地點
                 </label>
               </div>
               <input
                 type='text'
-                value={form.country}
-                onChange={(e) => setForm({ ...form, country: e.target.value })}
+                value={form.location}
+                onChange={(e) => setForm({ ...form, location: e.target.value })}
                 className='w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition-all'
-                placeholder='例：日本'
+                placeholder='例：台北市士林區'
               />
             </div>
 
-            {/* 封面照片 */}
+            {/* 備註 */}
             <div>
               <div className='flex items-center space-x-2 mb-3'>
                 <label className='text-base font-semibold text-gray-800'>
-                  封面照片
+                  備註
                 </label>
               </div>
-
-              {/* 圖片預覽或上傳區域 */}
-              <div className='relative'>
-                {form.coverImage && (
-                  <div className='relative'>
-                    <img
-                      src={form.coverImage}
-                      alt='封面預覽'
-                      className='w-full h-40 object-cover rounded-2xl'
-                    />
-                    <button
-                      type='button'
-                      onClick={() => setForm({ ...form, coverImage: '' })}
-                      className='absolute top-2 right-2 w-8 h-8 bg-black/50 text-white rounded-full flex items-center justify-center hover:bg-black/70'
-                    >
-                      ✕
-                    </button>
-                  </div>
-                )}
-
-                {!form.coverImage && (
-                  <label className='block w-full h-40 border-2 border-dashed border-gray-300 rounded-2xl cursor-pointer hover:border-blue-400 hover:bg-blue-50/50 transition-all'>
-                    <div className='flex flex-col items-center justify-center h-full'>
-                      <span className='text-sm text-gray-600 font-medium'>
-                        點擊上傳照片
-                      </span>
-                      <span className='text-xs text-gray-400 mt-1'>
-                        讓行程更有紀念價值
-                      </span>
-                    </div>
-                    <input
-                      type='file'
-                      accept='image/*'
-                      onChange={handleImageUpload}
-                      className='hidden'
-                    />
-                  </label>
-                )}
-              </div>
+              <textarea
+                value={form.notes}
+                onChange={(e) => setForm({ ...form, notes: e.target.value })}
+                className='w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition-all resize-none'
+                rows={3}
+                placeholder='記錄特別的注意事項或想法...'
+              />
             </div>
           </form>
         </div>
@@ -335,7 +308,7 @@ const TripFormModal = ({ tripData, mode, onClose, onSubmit }: Props) => {
             </button>
             <button
               onClick={handleSubmit}
-              disabled={!form.name || !form.startDate || !form.endDate}
+              disabled={!form.title || !form.time}
               className='flex-1 py-3 bg-linear-to-r from-blue-500 to-blue-600 text-white rounded-xl font-medium hover:from-blue-600 hover:to-blue-700 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer'
             >
               {confirmText}
@@ -347,4 +320,4 @@ const TripFormModal = ({ tripData, mode, onClose, onSubmit }: Props) => {
   );
 };
 
-export default TripFormModal;
+export default TripItemModal;

@@ -33,9 +33,6 @@ const Dashboard = () => {
       // 有 id，代表是編輯行程
       editTrip(newTrip);
     }
-
-    setIsShowTripFormModal(false);
-    setEditingTripForm(null);
   };
 
   const handleClose = () => {
