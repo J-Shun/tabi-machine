@@ -22,3 +22,24 @@ export const getDuration = ({
   const duration = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
   return duration;
 };
+
+export const getDates = ({
+  startDate,
+  endDate,
+}: {
+  startDate: string;
+  endDate: string;
+}) => {
+  if (!startDate || !endDate) return [];
+  const dates = [];
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+
+  for (let d = start; d <= end; d.setDate(d.getDate() + 1)) {
+    const formattedDate = d.toLocaleDateString('zh-TW');
+    const weekDay = d.toLocaleDateString('zh-TW', { weekday: 'short' });
+    dates.push({ date: formattedDate, weekDay });
+  }
+
+  return dates;
+};

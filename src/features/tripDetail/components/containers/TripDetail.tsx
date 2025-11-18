@@ -8,7 +8,7 @@ const TripDetail = () => {
   const navigate = useNavigate();
 
   const { tripId } = useParams({ from: '/tripDetail/$tripId/' });
-  const { tripDetail } = useTripDetail({ tripId });
+  const { tripItems, tripName } = useTripDetail({ tripId });
   const [isShowItemModal, setIsShowItemModal] = useState(false);
 
   const handleBack = () => {
@@ -17,21 +17,6 @@ const TripDetail = () => {
 
   const handleCloseItemModal = () => {
     setIsShowItemModal(false);
-  };
-
-  const getDates = () => {
-    if (!tripDetail) return [];
-    const dates = [];
-    const start = new Date(tripDetail.startDate);
-    const end = new Date(tripDetail.endDate);
-
-    for (let d = start; d <= end; d.setDate(d.getDate() + 1)) {
-      const formattedDate = d.toLocaleDateString('zh-TW');
-      const weekDay = d.toLocaleDateString('zh-TW', { weekday: 'short' });
-      dates.push({ date: formattedDate, weekDay, fullDate: new Date(d) });
-    }
-
-    return dates;
   };
 
   // 模擬行程資料，未來會從 API 或 state 取得
@@ -103,7 +88,7 @@ const TripDetail = () => {
     }
   };
 
-  if (!tripDetail) {
+  if (!tripItems) {
     return (
       <div className='flex items-center justify-center min-h-screen bg-gray-50'>
         <div className='text-center'>
@@ -113,8 +98,6 @@ const TripDetail = () => {
       </div>
     );
   }
-
-  const dates = getDates();
 
   return (
     <div className='min-h-screen bg-gray-50'>
@@ -128,19 +111,17 @@ const TripDetail = () => {
             <span className='text-xl'>←</span>
           </button>
           <div className='flex-1'>
-            <h1 className='text-lg font-bold text-gray-800'>
-              {tripDetail.name}
-            </h1>
-            <p className='text-sm text-gray-500'>{dates.length} 天行程</p>
+            <h1 className='text-lg font-bold text-gray-800'>{tripName}</h1>
+            <p className='text-sm text-gray-500'>{tripItems.length} 天行程</p>
           </div>
         </div>
       </div>
 
       {/* 行程內容 */}
       <div className='p-4 space-y-6 pb-24'>
-        {dates.map((dateInfo, dayIndex) => (
+        {tripItems.map((item, dayIndex) => (
           <div
-            key={dateInfo.date}
+            key={item.date}
             className='bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden'
           >
             {/* 日期標題區塊 */}
@@ -148,7 +129,7 @@ const TripDetail = () => {
               <div className='text-white'>
                 <h2 className='text-xl font-bold mb-1'>Day {dayIndex + 1}</h2>
                 <p className='text-blue-100 text-sm'>
-                  {dateInfo.date} ({dateInfo.weekDay})
+                  {item.date} ({item.weekDay})
                 </p>
               </div>
               <div className='text-white/80'>
