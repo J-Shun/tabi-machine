@@ -43,3 +43,28 @@ export const getDates = ({
 
   return dates;
 };
+
+// 根據行程類型回傳對應顏色
+export const getTypeColor = (type: string) => {
+  switch (type) {
+    case 'meal':
+      return 'bg-orange-500';
+    case 'attraction':
+      return 'bg-blue-500';
+    case 'shopping':
+      return 'bg-green-500';
+    case 'transport':
+      return 'bg-purple-500';
+    default:
+      return 'bg-gray-500';
+  }
+};
+
+// 行程類型選項
+export const getTypeOptions = () => [
+  { value: 'meal', label: '用餐', icon: '🍽️' },
+  { value: 'attraction', label: '景點', icon: '🏛️' },
+  { value: 'shopping', label: '購物', icon: '🛍️' },
+  { value: 'transport', label: '交通', icon: '🚗' },
+  { value: 'other', label: '其他', icon: '📍' },
+];

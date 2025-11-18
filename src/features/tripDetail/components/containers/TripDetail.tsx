@@ -1,8 +1,10 @@
+import React from 'react';
 import { useState } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import { useParams } from '@tanstack/react-router';
 import useTripDetail from '../../hooks/useTripDetail';
 import TripItemModal from '../widgets/TripItemModal';
+import { getTypeColor } from '../../../../helpers';
 
 const TripDetail = () => {
   const navigate = useNavigate();
@@ -11,8 +13,17 @@ const TripDetail = () => {
   const { tripItems, tripName } = useTripDetail({ tripId });
   const [isShowItemModal, setIsShowItemModal] = useState(false);
 
+  const dateOptions = tripItems ? tripItems.map((item) => item.date) : [];
+
   const handleBack = () => {
     navigate({ to: '/' });
+  };
+
+  const handleMap = (e: React.MouseEvent, location: string) => {
+    e.stopPropagation();
+    const query = encodeURIComponent(location);
+    const url = `https://www.google.com/maps/search/?api=1&query=${query}`;
+    window.open(url, '_blank');
   };
 
   const handleCloseItemModal = () => {
@@ -23,70 +34,35 @@ const TripDetail = () => {
   const mockItinerary = [
     {
       id: '1',
-      time: '09:00',
-      title: '飯店早餐',
-      location: '台北君悅酒店',
+      title: '搭乘飛機',
+      location: '桃園國際機場',
       type: 'meal',
     },
     {
       id: '2',
-      time: '10:30',
       title: '參觀故宮博物院',
       location: '台北市士林區',
       type: 'attraction',
     },
     {
       id: '3',
-      time: '12:30',
       title: '鼎泰豐午餐',
       location: '信義店',
       type: 'meal',
     },
     {
       id: '4',
-      time: '14:00',
       title: '信義區購物',
       location: '台北101',
       type: 'shopping',
     },
     {
       id: '5',
-      time: '18:00',
       title: '寧夏夜市',
       location: '台北市大同區',
       type: 'meal',
     },
   ];
-
-  const getTypeColor = (type: string) => {
-    switch (type) {
-      case 'meal':
-        return 'bg-orange-500';
-      case 'attraction':
-        return 'bg-blue-500';
-      case 'shopping':
-        return 'bg-green-500';
-      case 'transport':
-        return 'bg-purple-500';
-      default:
-        return 'bg-gray-500';
-    }
-  };
-
-  const getTypeIcon = (type: string) => {
-    switch (type) {
-      case 'meal':
-        return '🍽️';
-      case 'attraction':
-        return '🏛️';
-      case 'shopping':
-        return '🛍️';
-      case 'transport':
-        return '🚗';
-      default:
-        return '📍';
-    }
-  };
 
   if (!tripItems) {
     return (
@@ -164,23 +140,34 @@ const TripDetail = () => {
                         <div className='flex flex-1 bg-gray-50 rounded-xl p-4 shadow-sm'>
                           <div className='flex-1'>
                             {/* 時間和圖示 */}
-                            <div className='flex items-center space-x-2 mb-3'>
-                              <span className='text-sm font-medium text-white bg-gray-600 px-2 py-1 rounded'>
-                                {item.time}
-                              </span>
-                              <span className='text-lg'>
-                                {getTypeIcon(item.type)}
-                              </span>
+                            <div className='flex items-center space-x-2 mb-2'>
+                              {/* 標題和地點 */}
+                              <h3 className='font-semibold text-gray-800'>
+                                {item.title}
+                              </h3>
                             </div>
 
-                            {/* 標題和地點 */}
-                            <h3 className='font-semibold text-gray-800 mb-2'>
-                              {item.title}
-                            </h3>
-                            <p className='text-sm text-gray-600 flex items-center'>
-                              <span className='mr-1'>📍</span>
-                              {item.location}
-                            </p>
+                            <button
+                              className='inline-flex items-center space-x-2 text-sm text-gray-600 bg-gray-50 py-2 rounded-lg transition-all w-full text-left cursor-pointer group'
+                              onClick={(e) => handleMap(e, item.location)}
+                            >
+                              <svg
+                                className='w-4 h-4 text-gray-400 group-hover:text-blue-500 group-active:text-blue-600 transition-colors'
+                                fill='none'
+                                stroke='currentColor'
+                                viewBox='0 0 24 24'
+                              >
+                                <path
+                                  strokeLinecap='round'
+                                  strokeLinejoin='round'
+                                  strokeWidth={2}
+                                  d='M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-2M14 4h6m0 0v6m0-6L10 14'
+                                />
+                              </svg>
+                              <span className='font-medium flex-1 group-hover:text-gray-800 group-active:text-gray-900 transition-colors'>
+                                {item.location}
+                              </span>
+                            </button>
                           </div>
 
                           {/* 拖曳按鈕 */}
@@ -234,11 +221,12 @@ const TripDetail = () => {
         <TripItemModal
           itemData={{
             id: '',
-            time: '',
             title: '',
+            date: dateOptions[0],
             location: '',
             type: 'meal',
           }}
+          dateOptions={dateOptions}
           mode={'create'}
           onClose={handleCloseItemModal}
           onSubmit={() => {}}

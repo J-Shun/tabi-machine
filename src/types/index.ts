@@ -6,3 +6,12 @@ export interface Trip {
   country?: string;
   coverImage?: string;
 }
+
+export interface TripItem {
+  id: string;
+  title: string;
+  date: string;
+  location: string;
+  type: 'meal' | 'attraction' | 'shopping' | 'transport' | 'other';
+  notes?: string;
+}

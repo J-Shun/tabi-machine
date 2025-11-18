@@ -1,26 +1,27 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { getTypeOptions } from '../../../../helpers';
 
-interface TripItem {
-  id: string;
-  time: string;
-  title: string;
-  location: string;
-  type: 'meal' | 'attraction' | 'shopping' | 'transport' | 'other';
-  notes?: string;
-}
+import type { TripItem } from '../../../../types';
 
 interface Props {
   itemData: TripItem | null;
   mode: 'create' | 'edit';
+  dateOptions: string[];
   onClose: () => void;
   onSubmit: (item: TripItem) => void;
 }
 
-const TripItemModal = ({ itemData, mode, onClose, onSubmit }: Props) => {
+const TripItemModal = ({
+  itemData,
+  dateOptions,
+  mode,
+  onClose,
+  onSubmit,
+}: Props) => {
   const [form, setForm] = useState<TripItem>({
     id: itemData?.id || '',
-    time: itemData?.time || '',
     title: itemData?.title || '',
+    date: itemData?.date || dateOptions[0] || '',
     location: itemData?.location || '',
     type: itemData?.type || 'other',
     notes: itemData?.notes || '',
@@ -47,19 +48,11 @@ const TripItemModal = ({ itemData, mode, onClose, onSubmit }: Props) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (form.title && form.time) {
+    if (form.title && form.date) {
       onSubmit(form);
       handleClose();
     }
   };
-
-  const getTypeOptions = () => [
-    { value: 'meal', label: '用餐', icon: '🍽️' },
-    { value: 'attraction', label: '景點', icon: '🏛️' },
-    { value: 'shopping', label: '購物', icon: '🛍️' },
-    { value: 'transport', label: '交通', icon: '🚗' },
-    { value: 'other', label: '其他', icon: '📍' },
-  ];
 
   // 觸控滑動處理
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -214,52 +207,56 @@ const TripItemModal = ({ itemData, mode, onClose, onSubmit }: Props) => {
                 value={form.title}
                 onChange={(e) => setForm({ ...form, title: e.target.value })}
                 className='w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition-all'
-                placeholder='例：故宮博物院參觀'
+                placeholder='例：東京晴空塔'
                 required
               />
             </div>
 
-            {/* 時間和類型 */}
-            <div className='grid grid-cols-2 gap-3'>
-              <div>
-                <div className='flex items-center space-x-2 mb-3'>
-                  <label className='text-base font-semibold text-gray-800'>
-                    時間
-                  </label>
-                  <span className='text-red-400'>*</span>
-                </div>
-                <input
-                  type='time'
-                  value={form.time}
-                  onChange={(e) => setForm({ ...form, time: e.target.value })}
-                  className='w-full px-3 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition-all'
-                  required
-                />
+            {/* 日期選擇 */}
+            <div>
+              <div className='flex items-center space-x-2 mb-3'>
+                <label className='text-base font-semibold text-gray-800'>
+                  行程日期
+                </label>
+                <span className='text-red-400'>*</span>
               </div>
+              <select
+                value={form.date}
+                onChange={(e) => setForm({ ...form, date: e.target.value })}
+                className='w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition-all'
+                required
+              >
+                {dateOptions.map((option, index) => (
+                  <option key={option} value={option}>
+                    Day {index + 1} - {option}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-              <div>
-                <div className='flex items-center space-x-2 mb-3'>
-                  <label className='text-base font-semibold text-gray-800'>
-                    類型
-                  </label>
-                </div>
-                <select
-                  value={form.type}
-                  onChange={(e) =>
-                    setForm({
-                      ...form,
-                      type: e.target.value as TripItem['type'],
-                    })
-                  }
-                  className='w-full px-3 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition-all'
-                >
-                  {getTypeOptions().map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.icon} {option.label}
-                    </option>
-                  ))}
-                </select>
+            {/* 時間和類型 */}
+            <div>
+              <div className='flex items-center space-x-2 mb-3'>
+                <label className='text-base font-semibold text-gray-800'>
+                  類型
+                </label>
               </div>
+              <select
+                value={form.type}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    type: e.target.value as TripItem['type'],
+                  })
+                }
+                className='w-full px-3 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition-all'
+              >
+                {getTypeOptions().map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.icon} {option.label}
+                  </option>
+                ))}
+              </select>
             </div>
 
             {/* 地點 */}
@@ -274,7 +271,7 @@ const TripItemModal = ({ itemData, mode, onClose, onSubmit }: Props) => {
                 value={form.location}
                 onChange={(e) => setForm({ ...form, location: e.target.value })}
                 className='w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition-all'
-                placeholder='例：台北市士林區'
+                placeholder='請填入地點名稱或地址...'
               />
             </div>
 
@@ -308,7 +305,7 @@ const TripItemModal = ({ itemData, mode, onClose, onSubmit }: Props) => {
             </button>
             <button
               onClick={handleSubmit}
-              disabled={!form.title || !form.time}
+              disabled={!form.title}
               className='flex-1 py-3 bg-linear-to-r from-blue-500 to-blue-600 text-white rounded-xl font-medium hover:from-blue-600 hover:to-blue-700 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer'
             >
               {confirmText}
