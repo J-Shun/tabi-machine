@@ -3,7 +3,6 @@ import { useNavigate } from '@tanstack/react-router';
 import TripFormModal from '../widgets/TripFormModal';
 import TripCard from '../widgets/TripCard';
 import useTrips from '../hooks/useTrips';
-import { createUUID } from '../../../../helpers';
 
 import type { Trip } from '../../../../types';
 
@@ -24,11 +23,7 @@ const Dashboard = () => {
     const { id } = newTrip;
     // 沒有 id，代表是建立新行程
     if (!id) {
-      const trip: Trip = {
-        ...newTrip,
-        id: createUUID(),
-      };
-      createTrip(trip);
+      createTrip(newTrip);
     } else {
       // 有 id，代表是編輯行程
       editTrip(newTrip);

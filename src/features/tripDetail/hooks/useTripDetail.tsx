@@ -1,23 +1,48 @@
 import { useState, useEffect } from 'react';
-import { getDates } from '../../../helpers';
+import { getDates, createUUID } from '../../../helpers';
 
-import type { Trip } from '../../../types';
+import type { Trip, TripItem } from '../../../types';
 
-interface TripItem {
+interface TripDetail {
   date: string;
   weekDay: string;
-  items: Array<{
-    id: string;
-    time: string;
-    title: string;
-    location: string;
-    type: string;
-  }>;
+  items: TripItem[];
 }
 
+// 在尚未有 API 時，先使用 localStorage 處理
 const useTripDetail = ({ tripId }: { tripId: string }) => {
   const [tripName, setTripName] = useState<string>('');
-  const [tripItems, setTripItems] = useState<TripItem[] | null>([]);
+  const [tripItems, setTripItems] = useState<TripDetail[] | null>([]);
+
+  const createTripItem = (newTripItem: TripItem) => {
+    try {
+      const tripItem: TripItem = { ...newTripItem, id: createUUID() };
+
+      // 讀取現有資料，準備更新
+      const tripDetail = localStorage.getItem(tripId);
+      const parsedTripDetail: TripDetail[] = tripDetail
+        ? JSON.parse(tripDetail)
+        : [];
+
+      const updatedTripDetail = parsedTripDetail.map((detail) => {
+        if (detail.date === tripItem.date) {
+          return {
+            ...detail,
+            items: [...detail.items, tripItem],
+          };
+        }
+        return detail;
+      });
+
+      // 儲存
+      localStorage.setItem(tripId, JSON.stringify(updatedTripDetail));
+
+      // 更新本地狀態
+      setTripItems(updatedTripDetail);
+    } catch (error) {
+      console.error('Failed to create trip:', error);
+    }
+  };
 
   useEffect(() => {
     const trips = localStorage.getItem('trips');
@@ -53,6 +78,7 @@ const useTripDetail = ({ tripId }: { tripId: string }) => {
   return {
     tripName,
     tripItems,
+    createTripItem,
   };
 };
 

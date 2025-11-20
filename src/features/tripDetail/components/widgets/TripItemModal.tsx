@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { getTypeOptions } from '../../../../helpers';
 
 import type { TripItem } from '../../../../types';
 
@@ -10,6 +9,14 @@ interface Props {
   onClose: () => void;
   onSubmit: (item: TripItem) => void;
 }
+
+const typeOptions = [
+  { value: 'meal', label: '用餐' },
+  { value: 'attraction', label: '景點' },
+  { value: 'shopping', label: '購物' },
+  { value: 'transport', label: '交通' },
+  { value: 'other', label: '其他' },
+];
 
 const TripItemModal = ({
   itemData,
@@ -234,7 +241,7 @@ const TripItemModal = ({
               </select>
             </div>
 
-            {/* 時間和類型 */}
+            {/* 類型 */}
             <div>
               <div className='flex items-center space-x-2 mb-3'>
                 <label className='text-base font-semibold text-gray-800'>
@@ -251,9 +258,9 @@ const TripItemModal = ({
                 }
                 className='w-full px-3 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition-all'
               >
-                {getTypeOptions().map((option) => (
+                {typeOptions.map((option) => (
                   <option key={option.value} value={option.value}>
-                    {option.icon} {option.label}
+                    {option.label}
                   </option>
                 ))}
               </select>

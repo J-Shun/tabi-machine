@@ -59,12 +59,3 @@ export const getTypeColor = (type: string) => {
       return 'bg-gray-500';
   }
 };
-
-// 行程類型選項
-export const getTypeOptions = () => [
-  { value: 'meal', label: '用餐', icon: '🍽️' },
-  { value: 'attraction', label: '景點', icon: '🏛️' },
-  { value: 'shopping', label: '購物', icon: '🛍️' },
-  { value: 'transport', label: '交通', icon: '🚗' },
-  { value: 'other', label: '其他', icon: '📍' },
-];

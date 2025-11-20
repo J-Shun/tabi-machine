@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { createUUID } from '../../../../helpers';
 import type { Trip } from '../../../../types';
 
+// 在尚未有 API 時，先使用 localStorage 處理
 const useTrips = () => {
   const [trips, setTrips] = useState<Trip[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -13,7 +14,6 @@ const useTrips = () => {
       // 新建立的行程放在最前面
       const payload = [trip, ...trips];
 
-      // 在尚未有 API 時，先使用 localStorage 處理
       localStorage.setItem('trips', JSON.stringify(payload));
 
       // 更新本地狀態
