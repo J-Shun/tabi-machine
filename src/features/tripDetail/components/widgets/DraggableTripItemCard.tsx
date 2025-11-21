@@ -2,7 +2,6 @@ import type { Identifier, XYCoord } from 'dnd-core';
 import { useRef } from 'react';
 import { useDrag, useDrop, type DragSourceMonitor } from 'react-dnd';
 import MapButton from '../../../../components/units/MapButton';
-import DragButton from '../../../../components/units/DragButton';
 import { ItemTypes } from '../../constants/itemTypes';
 
 import type { TripDetail } from '../../../../types';
@@ -110,7 +109,7 @@ const DraggableTripItemCard = ({
     <div
       ref={ref}
       data-handler-id={handlerId}
-      className='flex w-full bg-gray-50 rounded-xl p-4 shadow-sm'
+      className='flex w-full bg-gray-50 rounded-xl p-4 shadow-sm cursor-pointer'
     >
       <div className='w-full'>
         <div className='flex items-center space-x-2 mb-2'>
@@ -118,11 +117,6 @@ const DraggableTripItemCard = ({
           <h3 className='font-semibold text-gray-800'>{detail.title}</h3>
         </div>
         <MapButton location={detail.location} />
-      </div>
-
-      {/* 拖曳按鈕 */}
-      <div className='flex items-center'>
-        <DragButton />
       </div>
     </div>
   );

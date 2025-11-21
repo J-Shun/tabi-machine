@@ -11,13 +11,13 @@ const MapButton = ({ location }: { location: string }) => {
 
   return (
     <button
-      className={`inline-flex items-center space-x-2 text-sm text-gray-600 bg-gray-50 py-2 rounded-lg transition-all w-full text-left cursor-pointer group ${
-        location ? '' : 'pointer-events-none'
+      className={`inline-flex items-center space-x-2 text-sm bg-gray-50 py-2 rounded-lg transition-all w-full text-left cursor-pointer group ${
+        location ? 'text-gray-600' : 'text-gray-400 pointer-events-none'
       }`}
       onClick={(e) => handleClick(e, location)}
     >
       <svg
-        className='w-4 h-4 text-gray-400 group-hover:text-blue-500 group-active:text-blue-600 transition-colors'
+        className='w-4 h-4 group-hover:text-blue-500 group-active:text-blue-600 transition-colors'
         fill='none'
         stroke='currentColor'
         viewBox='0 0 24 24'
