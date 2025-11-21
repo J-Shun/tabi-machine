@@ -8,6 +8,12 @@ export interface Trip {
 }
 
 export interface TripItem {
+  date: string;
+  weekDay: string;
+  details: TripDetail[];
+}
+
+export interface TripDetail {
   id: string;
   title: string;
   date: string;

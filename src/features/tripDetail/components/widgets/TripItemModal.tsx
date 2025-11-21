@@ -1,13 +1,13 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
-import type { TripItem } from '../../../../types';
+import type { TripDetail } from '../../../../types';
 
 interface Props {
-  itemData: TripItem | null;
+  itemData: TripDetail | null;
   mode: 'create' | 'edit';
   dateOptions: string[];
   onClose: () => void;
-  onSubmit: (item: TripItem) => void;
+  onSubmit: (item: TripDetail) => void;
 }
 
 const typeOptions = [
@@ -25,7 +25,7 @@ const TripItemModal = ({
   onClose,
   onSubmit,
 }: Props) => {
-  const [form, setForm] = useState<TripItem>({
+  const [form, setForm] = useState<TripDetail>({
     id: itemData?.id || '',
     title: itemData?.title || '',
     date: itemData?.date || dateOptions[0] || '',
@@ -253,7 +253,7 @@ const TripItemModal = ({
                 onChange={(e) =>
                   setForm({
                     ...form,
-                    type: e.target.value as TripItem['type'],
+                    type: e.target.value as TripDetail['type'],
                   })
                 }
                 className='w-full px-3 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition-all'

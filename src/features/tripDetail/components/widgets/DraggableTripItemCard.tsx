@@ -4,7 +4,7 @@ import { useDrag, useDrop, type DragSourceMonitor } from 'react-dnd';
 import MapButton from '../../../../components/units/MapButton';
 import DragButton from '../../../../components/units/DragButton';
 
-import type { TripItem } from '../../../../types';
+import type { TripDetail } from '../../../../types';
 
 interface DragItem {
   index: number;
@@ -13,11 +13,11 @@ interface DragItem {
 }
 
 const DraggableTripItemCard = ({
-  item,
+  detail,
   index,
   moveItem,
 }: {
-  item: TripItem;
+  detail: TripDetail;
   index: number;
   moveItem: (dragIndex: number, hoverIndex: number) => void;
 }) => {
@@ -98,9 +98,9 @@ const DraggableTripItemCard = ({
       <div className='w-full'>
         <div className='flex items-center space-x-2 mb-2'>
           {/* 標題和地點 */}
-          <h3 className='font-semibold text-gray-800'>{item.title}</h3>
+          <h3 className='font-semibold text-gray-800'>{detail.title}</h3>
         </div>
-        <MapButton location={item.location} />
+        <MapButton location={detail.location} />
       </div>
 
       {/* 拖曳按鈕 */}

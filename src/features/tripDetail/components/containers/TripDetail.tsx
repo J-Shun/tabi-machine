@@ -8,7 +8,7 @@ import Empty from '../units/Empty';
 import DraggableTripItemCard from '../widgets/DraggableTripItemCard';
 import { getTypeColor } from '../../../../helpers';
 
-import type { TripItem } from '../../../../types';
+import type { TripDetail } from '../../../../types';
 
 const TripDetail = () => {
   const navigate = useNavigate();
@@ -27,7 +27,7 @@ const TripDetail = () => {
     setIsShowItemModal(false);
   };
 
-  const handleSubmit = (newTripItem: TripItem) => {
+  const handleSubmit = (newTripItem: TripDetail) => {
     const { id } = newTripItem;
     // 沒有 id，代表是建立新行程
     if (!id) {
@@ -87,27 +87,27 @@ const TripDetail = () => {
 
             {/* 行程時間軸內容 */}
             <div className='p-6'>
-              {tripItem.items.length ? (
+              {tripItem.details.length ? (
                 <div className='relative'>
                   {/* 連續的時間軸線 */}
                   <div className='absolute left-[18px] top-14 bottom-14 w-0.5 bg-gray-300' />
 
                   <div className='space-y-0'>
-                    {tripItem.items.map((item, index) => (
+                    {tripItem.details.map((detail, index) => (
                       <div
-                        key={item.id}
+                        key={detail.id}
                         className='flex items-stretch space-x-4 relative pb-6 last:pb-0'
                       >
                         {/* 時間軸點 */}
                         <div className='flex items-center'>
                           <div
-                            className={`w-4 h-4 rounded-full ml-[11px] ${getTypeColor(item.type)} shadow-sm shrink-0`}
+                            className={`w-4 h-4 rounded-full ml-[11px] ${getTypeColor(detail.type)} shadow-sm shrink-0`}
                           />
                         </div>
 
                         {/* 行程內容卡片 */}
                         <DraggableTripItemCard
-                          item={item}
+                          detail={detail}
                           index={index}
                           moveItem={moveItem}
                         />

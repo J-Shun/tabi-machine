@@ -1,44 +1,36 @@
 import { useState, useEffect } from 'react';
 import { getDates, createUUID } from '../../../helpers';
 
-import type { Trip, TripItem } from '../../../types';
-
-interface TripDetail {
-  date: string;
-  weekDay: string;
-  items: TripItem[];
-}
+import type { Trip, TripDetail, TripItem } from '../../../types';
 
 // 在尚未有 API 時，先使用 localStorage 處理
 const useTripDetail = ({ tripId }: { tripId: string }) => {
   const [tripName, setTripName] = useState<string>('');
-  const [tripItems, setTripItems] = useState<TripDetail[] | null>([]);
+  const [tripItems, setTripItems] = useState<TripItem[] | null>([]);
 
-  const createTripItem = (newTripItem: TripItem) => {
+  const createTripItem = (newTripItem: TripDetail) => {
     try {
-      const tripItem: TripItem = { ...newTripItem, id: createUUID() };
+      const tripItem: TripDetail = { ...newTripItem, id: createUUID() };
 
       // 讀取現有資料，準備更新
-      const tripDetail = localStorage.getItem(tripId);
-      const parsedTripDetail: TripDetail[] = tripDetail
-        ? JSON.parse(tripDetail)
-        : [];
+      const trip = localStorage.getItem(tripId);
+      const parsedTripItems: TripItem[] = trip ? JSON.parse(trip) : [];
 
-      const updatedTripDetail = parsedTripDetail.map((detail) => {
-        if (detail.date === tripItem.date) {
+      const updatedTripItem = parsedTripItems.map((item) => {
+        if (item.date === tripItem.date) {
           return {
-            ...detail,
-            items: [...detail.items, tripItem],
+            ...item,
+            details: [...item.details, tripItem],
           };
         }
-        return detail;
+        return item;
       });
 
       // 儲存
-      localStorage.setItem(tripId, JSON.stringify(updatedTripDetail));
+      localStorage.setItem(tripId, JSON.stringify(updatedTripItem));
 
       // 更新本地狀態
-      setTripItems(updatedTripDetail);
+      setTripItems(updatedTripItem);
     } catch (error) {
       console.error('Failed to create trip:', error);
     }
@@ -63,7 +55,7 @@ const useTripDetail = ({ tripId }: { tripId: string }) => {
       const initialData = allDates.map((date) => ({
         date: date.date,
         weekDay: date.weekDay,
-        items: [],
+        details: [],
       }));
       const initialDataString = JSON.stringify(initialData);
       localStorage.setItem(tripId, initialDataString);
