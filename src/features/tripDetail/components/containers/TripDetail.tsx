@@ -1,12 +1,11 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import { useParams } from '@tanstack/react-router';
 import useTripDetail from '../../hooks/useTripDetail';
 import TripItemModal from '../widgets/TripItemModal';
-import DragButton from '../../../../components/units/DragButton';
-import MapButton from '../../../../components/units/MapButton';
 import Loading from '../../../../components/units/Loading';
 import Empty from '../units/Empty';
+import DraggableTripItemCard from '../widgets/DraggableTripItemCard';
 import { getTypeColor } from '../../../../helpers';
 
 import type { TripItem } from '../../../../types';
@@ -38,6 +37,11 @@ const TripDetail = () => {
       // TODO
     }
   };
+
+  const moveItem = useCallback((dragIndex: number, hoverIndex: number) => {
+    // TODO: 實現移動行程項目的邏輯
+    console.log(`Moving item from ${dragIndex} to ${hoverIndex}`);
+  }, []);
 
   if (!tripItems) return <Loading />;
 
@@ -89,7 +93,7 @@ const TripDetail = () => {
                   <div className='absolute left-[18px] top-14 bottom-14 w-0.5 bg-gray-300' />
 
                   <div className='space-y-0'>
-                    {tripItem.items.map((item) => (
+                    {tripItem.items.map((item, index) => (
                       <div
                         key={item.id}
                         className='flex items-stretch space-x-4 relative pb-6 last:pb-0'
@@ -102,22 +106,11 @@ const TripDetail = () => {
                         </div>
 
                         {/* 行程內容卡片 */}
-                        <div className='flex w-full bg-gray-50 rounded-xl p-4 shadow-sm'>
-                          <div className='w-full'>
-                            <div className='flex items-center space-x-2 mb-2'>
-                              {/* 標題和地點 */}
-                              <h3 className='font-semibold text-gray-800'>
-                                {item.title}
-                              </h3>
-                            </div>
-                            <MapButton location={item.location} />
-                          </div>
-
-                          {/* 拖曳按鈕 */}
-                          <div className='flex items-center'>
-                            <DragButton />
-                          </div>
-                        </div>
+                        <DraggableTripItemCard
+                          item={item}
+                          index={index}
+                          moveItem={moveItem}
+                        />
                       </div>
                     ))}
                   </div>
