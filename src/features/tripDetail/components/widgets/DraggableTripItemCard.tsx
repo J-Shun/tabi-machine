@@ -1,4 +1,4 @@
-import type { Identifier } from 'dnd-core';
+import type { Identifier, XYCoord } from 'dnd-core';
 import { useRef } from 'react';
 import { useDrag, useDrop, type DragSourceMonitor } from 'react-dnd';
 import MapButton from '../../../../components/units/MapButton';
@@ -42,7 +42,7 @@ const DraggableTripItemCard = ({
         handlerId: monitor.getHandlerId(),
       };
     },
-    hover(item: DragItem) {
+    hover(item: DragItem, monitor) {
       if (!ref.current) {
         return;
       }
@@ -56,7 +56,26 @@ const DraggableTripItemCard = ({
         return;
       }
 
-      // 執行交換（移除中間點限制）
+      // 獲取元件邊界
+      const hoverBoundingRect = ref.current?.getBoundingClientRect();
+
+      // 計算中點
+      const hoverMiddleY =
+        (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
+
+      // 獲取滑鼠位置
+      const clientOffset = monitor.getClientOffset();
+
+      // 計算滑鼠位置相對於元件頂部的距離
+      const hoverClientY = (clientOffset as XYCoord).y - hoverBoundingRect.top;
+
+      // 向下拖曳，只有在超過中點時才交換
+      if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) return;
+
+      // 向上拖曳，只有在低於中點時才交換
+      if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) return;
+
+      // 執行交換
       moveItem({
         sourceDate: dragSourceDate,
         targetDate: hoverTargetDate,
