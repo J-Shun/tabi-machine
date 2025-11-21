@@ -110,7 +110,6 @@ const useTripDetail = ({ tripId }: { tripId: string }) => {
 
     // 更新項目的日期
     const updatedItem = { ...movedItem, date: targetDate };
-    console.log('updatedItem', updatedItem);
     // 插入到目標日期的末尾
     newTripItems[targetDateIndex].details.push(updatedItem);
 
