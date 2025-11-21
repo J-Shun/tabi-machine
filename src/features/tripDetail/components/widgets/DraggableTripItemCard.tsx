@@ -3,23 +3,32 @@ import { useRef } from 'react';
 import { useDrag, useDrop, type DragSourceMonitor } from 'react-dnd';
 import MapButton from '../../../../components/units/MapButton';
 import DragButton from '../../../../components/units/DragButton';
+import { ItemTypes } from '../../constants/itemTypes';
 
 import type { TripDetail } from '../../../../types';
 
 interface DragItem {
   index: number;
-  id: string;
+  detail: TripDetail;
+  sourceDate: string;
   type: string;
 }
 
 const DraggableTripItemCard = ({
   detail,
   index,
+  sourceDate,
   moveItem,
 }: {
   detail: TripDetail;
   index: number;
-  moveItem: (dragIndex: number, hoverIndex: number) => void;
+  sourceDate: string;
+  moveItem: (params: {
+    sourceDate: string;
+    targetDate: string;
+    dragIndex: number;
+    hoverIndex: number;
+  }) => void;
 }) => {
   const ref = useRef<HTMLDivElement>(null);
   const [{ handlerId }, drop] = useDrop<
@@ -27,7 +36,7 @@ const DraggableTripItemCard = ({
     void,
     { handlerId: Identifier | null }
   >({
-    accept: 'Trip_Item_Card',
+    accept: ItemTypes.DETAIL_CARD,
     collect(monitor) {
       return {
         handlerId: monitor.getHandlerId(),
@@ -39,9 +48,11 @@ const DraggableTripItemCard = ({
       }
       const dragIndex = item.index;
       const hoverIndex = index;
+      const dragSourceDate = item.sourceDate;
+      const hoverTargetDate = sourceDate;
 
-      // 不自己和自己交換
-      if (dragIndex === hoverIndex) {
+      // 在原有的卡片上，不自己和自己交換
+      if (dragSourceDate === hoverTargetDate && dragIndex === hoverIndex) {
         return;
       }
 
@@ -65,27 +76,34 @@ const DraggableTripItemCard = ({
       if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) return;
 
       // 執行交換
-      moveItem(dragIndex, hoverIndex);
+      moveItem({
+        sourceDate: dragSourceDate,
+        targetDate: hoverTargetDate,
+        dragIndex: dragIndex,
+        hoverIndex: hoverIndex,
+      });
 
-      // Note: we're mutating the monitor item here!
-      // Generally it's better to avoid mutations,
-      // but it's good here for the sake of performance
-      // to avoid expensive index searches.
+      // 更新拖曳來源的索引，好讓後續的 hover 能正確判斷
       item.index = hoverIndex;
+      item.sourceDate = hoverTargetDate;
     },
   });
 
-  const [{ isDragging }, drag] = useDrag({
-    type: 'Trip_Item_Card',
+  const [, drag] = useDrag({
+    type: ItemTypes.DETAIL_CARD,
     item: () => {
-      return { index };
+      return {
+        index,
+        detail,
+        sourceDate,
+        type: ItemTypes.DETAIL_CARD,
+      };
     },
     collect: (monitor: DragSourceMonitor) => ({
       isDragging: monitor.isDragging(),
     }),
   });
 
-  const opacity = isDragging ? 0 : 1;
   drag(drop(ref));
 
   return (
@@ -93,7 +111,6 @@ const DraggableTripItemCard = ({
       ref={ref}
       data-handler-id={handlerId}
       className='flex w-full bg-gray-50 rounded-xl p-4 shadow-sm'
-      style={{ opacity }}
     >
       <div className='w-full'>
         <div className='flex items-center space-x-2 mb-2'>

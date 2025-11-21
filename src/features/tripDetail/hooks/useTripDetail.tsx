@@ -36,6 +36,91 @@ const useTripDetail = ({ tripId }: { tripId: string }) => {
     }
   };
 
+  const moveDetailToNewPosition = ({
+    sourceDate,
+    targetDate,
+    dragIndex,
+    hoverIndex,
+  }: {
+    sourceDate: string;
+    targetDate: string;
+    dragIndex: number;
+    hoverIndex: number;
+  }) => {
+    if (!tripItems) return;
+
+    // 複製一份 tripItems 資料
+    const newTripItems = [...tripItems];
+
+    const sourceDateIndex = newTripItems.findIndex(
+      (item) => item.date === sourceDate
+    );
+    const targetDateIndex = newTripItems.findIndex(
+      (item) => item.date === targetDate
+    );
+
+    // 找不到日期就返回
+    if (sourceDateIndex === -1 || targetDateIndex === -1) return;
+
+    // 從來源日期移除項目
+    const [movedItem] = newTripItems[sourceDateIndex].details.splice(
+      dragIndex,
+      1
+    );
+
+    // 插入到目標日期的指定位置
+    newTripItems[targetDateIndex].details.splice(hoverIndex, 0, movedItem);
+
+    // 更新本地存儲
+    localStorage.setItem(tripId, JSON.stringify(newTripItems));
+
+    // 更新畫面
+    setTripItems(newTripItems);
+  };
+
+  const moveDetailToEmptyDate = ({
+    sourceDate,
+    targetDate,
+    dragIndex,
+  }: {
+    sourceDate: string;
+    targetDate: string;
+    dragIndex: number;
+  }) => {
+    if (!tripItems) return;
+
+    // 複製一份 tripItems 資料
+    const newTripItems = [...tripItems];
+
+    const sourceDateIndex = newTripItems.findIndex(
+      (item) => item.date === sourceDate
+    );
+    const targetDateIndex = newTripItems.findIndex(
+      (item) => item.date === targetDate
+    );
+
+    // 找不到日期就返回
+    if (sourceDateIndex === -1 || targetDateIndex === -1) return;
+
+    // 從來源日期移除項目
+    const [movedItem] = newTripItems[sourceDateIndex].details.splice(
+      dragIndex,
+      1
+    );
+
+    // 更新項目的日期
+    const updatedItem = { ...movedItem, date: targetDate };
+    console.log('updatedItem', updatedItem);
+    // 插入到目標日期的末尾
+    newTripItems[targetDateIndex].details.push(updatedItem);
+
+    // 更新本地存儲
+    localStorage.setItem(tripId, JSON.stringify(newTripItems));
+
+    // 更新畫面
+    setTripItems(newTripItems);
+  };
+
   useEffect(() => {
     const trips = localStorage.getItem('trips');
     if (!trips) return;
@@ -71,6 +156,8 @@ const useTripDetail = ({ tripId }: { tripId: string }) => {
     tripName,
     tripItems,
     createTripItem,
+    moveDetailToEmptyDate,
+    moveDetailToNewPosition,
   };
 };
 

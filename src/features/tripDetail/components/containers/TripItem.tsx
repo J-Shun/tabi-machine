@@ -4,9 +4,7 @@ import { useParams } from '@tanstack/react-router';
 import useTripDetail from '../../hooks/useTripDetail';
 import TripDetailModal from '../widgets/TripDetailModal';
 import Loading from '../../../../components/units/Loading';
-import Empty from '../units/Empty';
-import DraggableTripItemCard from '../widgets/DraggableTripItemCard';
-import { getTypeColor } from '../../../../helpers';
+import DroppableDateCard from '../widgets/DroppableDateCard';
 
 import type { TripDetail } from '../../../../types';
 
@@ -15,7 +13,13 @@ const TripItem = () => {
 
   const { tripId } = useParams({ from: '/tripItem/$tripId/' });
 
-  const { tripItems, tripName, createTripItem } = useTripDetail({ tripId });
+  const {
+    tripItems,
+    tripName,
+    createTripItem,
+    moveDetailToEmptyDate,
+    moveDetailToNewPosition,
+  } = useTripDetail({ tripId });
   const [isShowItemModal, setIsShowItemModal] = useState(false);
 
   const dateOptions = tripItems ? tripItems.map((item) => item.date) : [];
@@ -28,6 +32,43 @@ const TripItem = () => {
     setIsShowItemModal(false);
   };
 
+  const moveItem = useCallback(
+    ({
+      sourceDate,
+      targetDate,
+      dragIndex,
+      hoverIndex,
+    }: {
+      sourceDate: string;
+      targetDate: string;
+      dragIndex: number;
+      hoverIndex: number;
+    }) => {
+      moveDetailToNewPosition({
+        sourceDate,
+        targetDate,
+        dragIndex,
+        hoverIndex,
+      });
+    },
+    [moveDetailToNewPosition]
+  );
+
+  const moveItemBetweenDates = useCallback(
+    ({
+      sourceDate,
+      targetDate,
+      dragIndex,
+    }: {
+      sourceDate: string;
+      targetDate: string;
+      dragIndex: number;
+    }) => {
+      moveDetailToEmptyDate({ sourceDate, targetDate, dragIndex });
+    },
+    [moveDetailToEmptyDate]
+  );
+
   const handleSubmit = (newTripDetail: TripDetail) => {
     const { id } = newTripDetail;
     // 沒有 id，代表是建立新行程
@@ -38,11 +79,6 @@ const TripItem = () => {
       // TODO
     }
   };
-
-  const moveItem = useCallback((dragIndex: number, hoverIndex: number) => {
-    // TODO: 實現移動行程項目的邏輯
-    console.log(`Moving item from ${dragIndex} to ${hoverIndex}`);
-  }, []);
 
   if (!tripItems) return <Loading />;
 
@@ -86,40 +122,12 @@ const TripItem = () => {
               </div>
             </div>
 
-            {/* 行程時間軸內容 */}
-            <div className='p-6'>
-              {tripItem.details.length ? (
-                <div className='relative'>
-                  {/* 連續的時間軸線 */}
-                  <div className='absolute left-[18px] top-14 bottom-14 w-0.5 bg-gray-300' />
-
-                  <div className='space-y-0'>
-                    {tripItem.details.map((detail, index) => (
-                      <div
-                        key={detail.id}
-                        className='flex items-stretch space-x-4 relative pb-6 last:pb-0'
-                      >
-                        {/* 時間軸點 */}
-                        <div className='flex items-center'>
-                          <div
-                            className={`w-4 h-4 rounded-full ml-[11px] ${getTypeColor(detail.type)} shadow-sm shrink-0`}
-                          />
-                        </div>
-
-                        {/* 行程內容卡片 */}
-                        <DraggableTripItemCard
-                          detail={detail}
-                          index={index}
-                          moveItem={moveItem}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ) : (
-                <Empty />
-              )}
-            </div>
+            <DroppableDateCard
+              date={tripItem.date}
+              details={tripItem.details}
+              moveItem={moveItem}
+              moveItemBetweenDates={moveItemBetweenDates}
+            />
           </div>
         ))}
       </div>
