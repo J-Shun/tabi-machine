@@ -10,10 +10,11 @@ import { getTypeColor } from '../../../../helpers';
 
 import type { TripDetail } from '../../../../types';
 
-const TripDetail = () => {
+const TripItem = () => {
   const navigate = useNavigate();
 
-  const { tripId } = useParams({ from: '/tripDetail/$tripId/' });
+  const { tripId } = useParams({ from: '/tripItem/$tripId/' });
+
   const { tripItems, tripName, createTripItem } = useTripDetail({ tripId });
   const [isShowItemModal, setIsShowItemModal] = useState(false);
 
@@ -153,4 +154,4 @@ const TripDetail = () => {
   );
 };
 
-export default TripDetail;
+export default TripItem;

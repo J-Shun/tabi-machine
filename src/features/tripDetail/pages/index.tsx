@@ -1,7 +1,7 @@
-import TripDetail from '../components/containers/TripDetail';
+import TripItem from '../components/containers/TripItem';
 
-const TripDetailPage = () => {
-  return <TripDetail />;
+const TripItemPage = () => {
+  return <TripItem />;
 };
 
-export default TripDetailPage;
+export default TripItemPage;

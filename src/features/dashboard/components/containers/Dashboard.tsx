@@ -16,7 +16,7 @@ const Dashboard = () => {
   const isTripsExist = trips.length > 0;
 
   const handleTripSelect = (tripId: string) => {
-    navigate({ to: '/tripDetail/' + tripId });
+    navigate({ to: '/tripItem/' + tripId });
   };
 
   const handleSubmit = (newTrip: Trip) => {
