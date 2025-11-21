@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import { useParams } from '@tanstack/react-router';
 import useTripDetail from '../../hooks/useTripDetail';
-import TripItemModal from '../widgets/TripItemModal';
+import TripDetailModal from '../widgets/TripDetailModal';
 import Loading from '../../../../components/units/Loading';
 import Empty from '../units/Empty';
 import DraggableTripItemCard from '../widgets/DraggableTripItemCard';
@@ -28,11 +28,11 @@ const TripItem = () => {
     setIsShowItemModal(false);
   };
 
-  const handleSubmit = (newTripItem: TripDetail) => {
-    const { id } = newTripItem;
+  const handleSubmit = (newTripDetail: TripDetail) => {
+    const { id } = newTripDetail;
     // 沒有 id，代表是建立新行程
     if (!id) {
-      createTripItem(newTripItem);
+      createTripItem(newTripDetail);
     } else {
       // 有 id，代表是編輯行程
       // TODO
@@ -136,7 +136,7 @@ const TripItem = () => {
 
       {/* 行程項目詳情彈窗範例 */}
       {isShowItemModal && (
-        <TripItemModal
+        <TripDetailModal
           itemData={{
             id: '',
             title: '',

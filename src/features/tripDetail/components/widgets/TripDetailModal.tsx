@@ -18,7 +18,7 @@ const typeOptions = [
   { value: 'other', label: '其他' },
 ];
 
-const TripItemModal = ({
+const TripDetailModal = ({
   itemData,
   dateOptions,
   mode,
@@ -324,4 +324,4 @@ const TripItemModal = ({
   );
 };
 
-export default TripItemModal;
+export default TripDetailModal;
