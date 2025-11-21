@@ -18,6 +18,7 @@ const DroppableDateCard = ({
   details,
   moveItem,
   moveItemBetweenDates,
+  onEdit,
 }: {
   date: string;
   details: TripDetail[];
@@ -32,6 +33,7 @@ const DroppableDateCard = ({
     targetDate: string;
     dragIndex: number;
   }) => void;
+  onEdit: (detail: TripDetail) => void;
 }) => {
   const [, drop] = useDrop({
     accept: ItemTypes.DETAIL_CARD,
@@ -81,6 +83,7 @@ const DroppableDateCard = ({
                   index={index}
                   sourceDate={date}
                   moveItem={moveItem}
+                  onEdit={onEdit}
                 />
               </div>
             ))}

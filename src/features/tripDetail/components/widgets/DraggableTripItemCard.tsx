@@ -18,6 +18,7 @@ const DraggableTripItemCard = ({
   index,
   sourceDate,
   moveItem,
+  onEdit,
 }: {
   detail: TripDetail;
   index: number;
@@ -28,6 +29,7 @@ const DraggableTripItemCard = ({
     dragIndex: number;
     hoverIndex: number;
   }) => void;
+  onEdit: (detail: TripDetail) => void;
 }) => {
   const ref = useRef<HTMLDivElement>(null);
   const [{ handlerId }, drop] = useDrop<
@@ -88,7 +90,7 @@ const DraggableTripItemCard = ({
     },
   });
 
-  const [, drag] = useDrag({
+  const [{ isDragging }, drag] = useDrag({
     type: ItemTypes.DETAIL_CARD,
     item: () => {
       return {
@@ -103,13 +105,21 @@ const DraggableTripItemCard = ({
     }),
   });
 
+  const handleClick = () => {
+    // 只有在沒有拖曳的時候才觸發點擊事件
+    if (!isDragging) {
+      onEdit(detail);
+    }
+  };
+
   drag(drop(ref));
 
   return (
     <div
       ref={ref}
       data-handler-id={handlerId}
-      className='flex w-full bg-gray-50 rounded-xl p-4 shadow-sm cursor-pointer'
+      onClick={handleClick}
+      className='flex w-full bg-gray-50 rounded-xl p-4 shadow-sm cursor-pointer hover:bg-gray-100 transition-colors'
     >
       <div className='w-full'>
         <div className='flex items-center space-x-2 mb-2'>

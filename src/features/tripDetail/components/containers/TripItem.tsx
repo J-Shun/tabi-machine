@@ -17,10 +17,13 @@ const TripItem = () => {
     tripItems,
     tripName,
     createTripItem,
+    editTripItem,
     moveDetailToEmptyDate,
     moveDetailToNewPosition,
   } = useTripDetail({ tripId });
+
   const [isShowItemModal, setIsShowItemModal] = useState(false);
+  const [editingDetail, setEditingDetail] = useState<TripDetail | null>(null);
 
   const dateOptions = tripItems ? tripItems.map((item) => item.date) : [];
 
@@ -30,6 +33,12 @@ const TripItem = () => {
 
   const handleCloseItemModal = () => {
     setIsShowItemModal(false);
+    setEditingDetail(null);
+  };
+
+  const handleEditDetail = (detail: TripDetail) => {
+    setEditingDetail(detail);
+    setIsShowItemModal(true);
   };
 
   const moveItem = useCallback(
@@ -76,7 +85,7 @@ const TripItem = () => {
       createTripItem(newTripDetail);
     } else {
       // 有 id，代表是編輯行程
-      // TODO
+      editTripItem(newTripDetail);
     }
   };
 
@@ -127,6 +136,7 @@ const TripItem = () => {
               details={tripItem.details}
               moveItem={moveItem}
               moveItemBetweenDates={moveItemBetweenDates}
+              onEdit={handleEditDetail}
             />
           </div>
         ))}
@@ -142,18 +152,20 @@ const TripItem = () => {
         </button>
       </div>
 
-      {/* 行程項目詳情彈窗範例 */}
+      {/* 行程項目詳情彈窗 */}
       {isShowItemModal && (
         <TripDetailModal
-          itemData={{
-            id: '',
-            title: '',
-            date: dateOptions[0],
-            location: '',
-            type: 'meal',
-          }}
+          itemData={
+            editingDetail || {
+              id: '',
+              title: '',
+              date: dateOptions[0],
+              location: '',
+              type: 'meal',
+            }
+          }
           dateOptions={dateOptions}
-          mode={'create'}
+          mode={editingDetail ? 'edit' : 'create'}
           onClose={handleCloseItemModal}
           onSubmit={handleSubmit}
         />

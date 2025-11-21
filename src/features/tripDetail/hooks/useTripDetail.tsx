@@ -68,6 +68,9 @@ const useTripDetail = ({ tripId }: { tripId: string }) => {
       1
     );
 
+    // 將 Detail 的日期更新為目標日期
+    movedItem.date = targetDate;
+
     // 插入到目標日期的指定位置
     newTripItems[targetDateIndex].details.splice(hoverIndex, 0, movedItem);
 
@@ -120,6 +123,46 @@ const useTripDetail = ({ tripId }: { tripId: string }) => {
     setTripItems(newTripItems);
   };
 
+  const editTripItem = (updatedDetail: TripDetail) => {
+    if (!tripItems) return;
+
+    // 更改資料，並且當日期有變動時，要將 Detail 放入對應日期的陣列中
+    const newTripItems = tripItems.map((item) => {
+      // 找到原本的日期，移除該 Detail
+      if (
+        item.details.some((detail) => detail.id === updatedDetail.id) &&
+        item.date !== updatedDetail.date
+      ) {
+        return {
+          ...item,
+          details: item.details.filter(
+            (detail) => detail.id !== updatedDetail.id
+          ),
+        };
+      }
+
+      // 找到更新後的日期，加入該 Detail
+      if (item.date === updatedDetail.date) {
+        return {
+          ...item,
+          details: item.details.some((detail) => detail.id === updatedDetail.id)
+            ? item.details.map((detail) =>
+                detail.id === updatedDetail.id ? updatedDetail : detail
+              )
+            : [...item.details, updatedDetail],
+        };
+      }
+
+      return item;
+    });
+
+    // 更新本地存儲
+    localStorage.setItem(tripId, JSON.stringify(newTripItems));
+
+    // 更新畫面
+    setTripItems(newTripItems);
+  };
+
   useEffect(() => {
     const trips = localStorage.getItem('trips');
     if (!trips) return;
@@ -157,6 +200,7 @@ const useTripDetail = ({ tripId }: { tripId: string }) => {
     createTripItem,
     moveDetailToEmptyDate,
     moveDetailToNewPosition,
+    editTripItem,
   };
 };
 
