@@ -11,8 +11,8 @@ interface Props {
 }
 
 const typeOptions = [
-  { value: 'meal', label: '用餐' },
   { value: 'attraction', label: '景點' },
+  { value: 'meal', label: '美食' },
   { value: 'shopping', label: '購物' },
   { value: 'transport', label: '交通' },
   { value: 'other', label: '其他' },
@@ -30,7 +30,7 @@ const TripDetailModal = ({
     title: itemData?.title || '',
     date: itemData?.date || dateOptions[0] || '',
     location: itemData?.location || '',
-    type: itemData?.type || 'other',
+    type: itemData?.type || 'attraction',
     notes: itemData?.notes || '',
   });
 

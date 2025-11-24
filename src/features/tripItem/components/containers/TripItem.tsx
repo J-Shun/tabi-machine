@@ -99,7 +99,7 @@ const TripItem = () => {
   return (
     <div className='min-h-screen bg-gray-50'>
       {/* 標題列 */}
-      <div className='bg-white shadow-sm sticky top-0 z-10'>
+      <div className='bg-white shadow-sm sticky top-0 z-50'>
         <div className='p-4 flex items-center'>
           <button
             onClick={handleBack}
