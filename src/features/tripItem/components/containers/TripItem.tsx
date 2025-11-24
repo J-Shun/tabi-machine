@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import { useParams } from '@tanstack/react-router';
-import useTripDetail from '../../hooks/useTripDetail';
+import useTripItem from '../../hooks/useTripItem';
 import TripDetailModal from '../widgets/TripDetailModal';
 import Loading from '../../../../components/units/Loading';
 import DroppableDateCard from '../widgets/DroppableDateCard';
@@ -20,7 +20,7 @@ const TripItem = () => {
     editTripItem,
     moveDetailToEmptyDate,
     moveDetailToNewPosition,
-  } = useTripDetail({ tripId });
+  } = useTripItem({ tripId });
 
   const [isShowItemModal, setIsShowItemModal] = useState(false);
   const [editingDetail, setEditingDetail] = useState<TripDetail | null>(null);

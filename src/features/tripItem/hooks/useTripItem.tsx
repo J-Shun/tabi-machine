@@ -4,7 +4,7 @@ import { getDates, createUUID } from '../../../helpers';
 import type { Trip, TripDetail, TripItem } from '../../../types';
 
 // 在尚未有 API 時，先使用 localStorage 處理
-const useTripDetail = ({ tripId }: { tripId: string }) => {
+const useTripItem = ({ tripId }: { tripId: string }) => {
   const [tripName, setTripName] = useState<string>('');
   const [tripItems, setTripItems] = useState<TripItem[] | null>([]);
 
@@ -204,4 +204,4 @@ const useTripDetail = ({ tripId }: { tripId: string }) => {
   };
 };
 
-export default useTripDetail;
+export default useTripItem;

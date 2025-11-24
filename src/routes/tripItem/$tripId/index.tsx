@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import TripItemPage from '../../../features/tripDetail/pages';
+import TripItemPage from '../../../features/tripItem/pages';
 
 export const Route = createFileRoute('/tripItem/$tripId/')({
   component: RouteComponent,
