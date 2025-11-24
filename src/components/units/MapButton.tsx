@@ -11,7 +11,7 @@ const MapButton = ({ location }: { location: string }) => {
 
   return (
     <button
-      className={`inline-flex items-center space-x-2 text-sm bg-gray-50 py-2 rounded-lg transition-all w-full text-left cursor-pointer group ${
+      className={`inline-flex items-center space-x-2 text-sm py-2 rounded-lg transition-all w-full text-left cursor-pointer group ${
         location ? 'text-gray-600' : 'text-gray-400 pointer-events-none'
       }`}
       onClick={(e) => handleClick(e, location)}

@@ -17,7 +17,8 @@ const TripItem = () => {
     tripItems,
     tripName,
     createTripItem,
-    editTripItem,
+    editTripDetail,
+    deleteTripDetail,
     moveDetailToEmptyDate,
     moveDetailToNewPosition,
   } = useTripItem({ tripId });
@@ -85,8 +86,12 @@ const TripItem = () => {
       createTripItem(newTripDetail);
     } else {
       // 有 id，代表是編輯行程
-      editTripItem(newTripDetail);
+      editTripDetail(newTripDetail);
     }
+  };
+
+  const handleDelete = (detail: TripDetail) => {
+    deleteTripDetail(detail);
   };
 
   if (!tripItems) return <Loading />;
@@ -132,6 +137,7 @@ const TripItem = () => {
               moveItem={moveItem}
               moveItemBetweenDates={moveItemBetweenDates}
               onEdit={handleEditDetail}
+              onDelete={handleDelete}
             />
           </div>
         ))}
@@ -150,15 +156,7 @@ const TripItem = () => {
       {/* 行程項目詳情彈窗 */}
       {isShowItemModal && (
         <TripDetailModal
-          itemData={
-            editingDetail || {
-              id: '',
-              title: '',
-              date: dateOptions[0],
-              location: '',
-              type: 'meal',
-            }
-          }
+          itemData={editingDetail}
           dateOptions={dateOptions}
           mode={editingDetail ? 'edit' : 'create'}
           onClose={handleCloseItemModal}

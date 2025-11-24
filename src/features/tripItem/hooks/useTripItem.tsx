@@ -123,7 +123,7 @@ const useTripItem = ({ tripId }: { tripId: string }) => {
     setTripItems(newTripItems);
   };
 
-  const editTripItem = (updatedDetail: TripDetail) => {
+  const editTripDetail = (updatedDetail: TripDetail) => {
     if (!tripItems) return;
 
     // 更改資料，並且當日期有變動時，要將 Detail 放入對應日期的陣列中
@@ -153,6 +153,26 @@ const useTripItem = ({ tripId }: { tripId: string }) => {
         };
       }
 
+      return item;
+    });
+
+    // 更新本地存儲
+    localStorage.setItem(tripId, JSON.stringify(newTripItems));
+
+    // 更新畫面
+    setTripItems(newTripItems);
+  };
+
+  const deleteTripDetail = (detail: TripDetail) => {
+    if (!tripItems) return;
+
+    const newTripItems = tripItems.map((item) => {
+      if (item.date === detail.date) {
+        return {
+          ...item,
+          details: item.details.filter((d) => d.id !== detail.id),
+        };
+      }
       return item;
     });
 
@@ -200,7 +220,8 @@ const useTripItem = ({ tripId }: { tripId: string }) => {
     createTripItem,
     moveDetailToEmptyDate,
     moveDetailToNewPosition,
-    editTripItem,
+    editTripDetail,
+    deleteTripDetail,
   };
 };
 

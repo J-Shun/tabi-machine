@@ -19,6 +19,7 @@ const DraggableTripItemCard = ({
   sourceDate,
   moveItem,
   onEdit,
+  onDelete,
 }: {
   detail: TripDetail;
   index: number;
@@ -30,6 +31,7 @@ const DraggableTripItemCard = ({
     hoverIndex: number;
   }) => void;
   onEdit: (detail: TripDetail) => void;
+  onDelete: (detail: TripDetail) => void;
 }) => {
   const ref = useRef<HTMLDivElement>(null);
   const [{ handlerId }, drop] = useDrop<
@@ -112,6 +114,18 @@ const DraggableTripItemCard = ({
     }
   };
 
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation(); // 阻止事件冒泡，避免觸發卡片的點擊事件
+
+    const isConfirmed = window.confirm(
+      `確定要刪除「${detail.title}」嗎？此操作無法復原。`
+    );
+
+    if (isConfirmed) {
+      onDelete?.(detail);
+    }
+  };
+
   drag(drop(ref));
 
   return (
@@ -119,12 +133,33 @@ const DraggableTripItemCard = ({
       ref={ref}
       data-handler-id={handlerId}
       onClick={handleClick}
-      className='flex w-full bg-gray-50 rounded-xl p-4 shadow-sm cursor-pointer hover:bg-gray-100 transition-colors'
+      className='flex w-full bg-gray-50 rounded-xl p-4 shadow-sm cursor-pointer hover:bg-gray-100 transition-colors relative'
     >
-      <div className='w-full'>
-        <div className='flex items-center space-x-2 mb-2'>
+      <div className='w-full pr-'>
+        <div className='flex items-center justify-between space-x-2 mb-2'>
           {/* 標題和地點 */}
           <h3 className='font-semibold text-gray-800'>{detail.title}</h3>
+
+          {/* 刪除按鈕 */}
+          <button
+            onClick={handleDelete}
+            className='group w-8 h-8 rounded-full flex items-center justify-center transition-colors z-10 cursor-pointer'
+            aria-label={`刪除 ${detail.title}`}
+          >
+            <svg
+              className='w-4 h-4 text-gray-600 group-hover:text-red-600'
+              fill='none'
+              stroke='currentColor'
+              viewBox='0 0 24 24'
+            >
+              <path
+                strokeLinecap='round'
+                strokeLinejoin='round'
+                strokeWidth={2}
+                d='M6 18L18 6M6 6l12 12'
+              />
+            </svg>
+          </button>
         </div>
         <MapButton location={detail.location} />
       </div>
