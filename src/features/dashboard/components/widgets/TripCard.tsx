@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { formatDate, getDuration } from '../../../../helpers';
+import MenuButton from '../../../../components/units/MenuButton';
 
 import type { Trip } from '../../../../types';
 
@@ -77,16 +78,7 @@ const TripCard = ({ trip, onClick, onEdit, onDelete }: Props) => {
 
           {/* 右上角三點按鈕 */}
           <div className='absolute top-3 right-3'>
-            <button
-              onClick={handleMenuToggle}
-              className='w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white transition-colors cursor-pointer'
-            >
-              <div className='flex flex-col space-y-0.5'>
-                <div className='w-1 h-1 bg-gray-600 rounded-full'></div>
-                <div className='w-1 h-1 bg-gray-600 rounded-full'></div>
-                <div className='w-1 h-1 bg-gray-600 rounded-full'></div>
-              </div>
-            </button>
+            <MenuButton onClick={handleMenuToggle} />
           </div>
         </div>
 
