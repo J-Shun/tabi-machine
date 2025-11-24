@@ -124,11 +124,6 @@ const TripItem = () => {
                   {tripItem.date} ({tripItem.weekDay})
                 </p>
               </div>
-              <div className='text-white/80'>
-                <button className='p-2 hover:bg-white/20 rounded-lg transition-colors cursor-pointer'>
-                  <span>⋯</span>
-                </button>
-              </div>
             </div>
 
             <DroppableDateCard
