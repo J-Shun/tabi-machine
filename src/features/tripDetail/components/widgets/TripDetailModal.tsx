@@ -38,6 +38,7 @@ const TripDetailModal = ({
   const [startY, setStartY] = useState(0);
   const [currentY, setCurrentY] = useState(0);
   const [isClosing, setIsClosing] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
 
   const confirmText = mode === 'create' ? '新增項目' : '更新項目';
@@ -45,12 +46,13 @@ const TripDetailModal = ({
   // 關閉動畫處理
   const handleClose = useCallback(() => {
     setIsClosing(true);
+    setIsVisible(false);
     if (modalRef.current) {
       modalRef.current.style.transform = 'translateY(100%)';
     }
     setTimeout(() => {
       onClose();
-    }, 200);
+    }, 300);
   }, [onClose]);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -156,6 +158,9 @@ const TripDetailModal = ({
 
   // 入場動畫
   useEffect(() => {
+    // 元件載入後立即觸發背景動畫
+    setIsVisible(true);
+
     if (modalRef.current && !isClosing) {
       modalRef.current.style.transform = 'translateY(100%)';
       requestAnimationFrame(() => {
@@ -168,12 +173,16 @@ const TripDetailModal = ({
 
   return (
     <div
-      className='fixed inset-0 bg-black/60 backdrop-blur-sm flex items-end justify-center z-50 p-0'
+      className={`fixed inset-0 flex items-end justify-center z-50 p-0 transition-all duration-300 ease-out ${
+        isVisible
+          ? 'bg-black/60 backdrop-blur-sm'
+          : 'bg-black/0 backdrop-blur-none'
+      }`}
       onClick={handleBackdropClick}
     >
       <div
         ref={modalRef}
-        className='bg-white rounded-t-3xl w-full max-w-md shadow-2xl transition-transform duration-200 ease-out'
+        className='bg-white rounded-t-3xl w-full max-w-md shadow-2xl transition-transform duration-300 ease-out'
         style={{ transform: 'translateY(100%)' }}
       >
         {/* 可拖拉的把手區域 */}
