@@ -3,6 +3,7 @@ import DraggableTripItemCard from './DraggableTripItemCard';
 import Empty from '../units/Empty';
 import { getTypeColor } from '../../../../helpers';
 import { ItemTypes } from '../../constants/itemTypes';
+import { motion } from 'framer-motion';
 
 import type { TripDetail } from '../../../../types';
 
@@ -58,7 +59,12 @@ const DroppableDateCard = ({
   });
 
   return (
-    <div ref={drop as never} className='p-6'>
+    <motion.div
+      ref={drop as never}
+      className='p-6'
+      layout
+      transition={{ duration: 0.2 }}
+    >
       {details.length ? (
         <div className='relative'>
           {/* 連續的時間軸線 */}
@@ -66,8 +72,10 @@ const DroppableDateCard = ({
 
           <div className='space-y-0'>
             {details.map((detail, index) => (
-              <div
+              <motion.div
                 key={detail.id}
+                layout
+                transition={{ duration: 0.2 }}
                 className='flex items-stretch space-x-4 relative pb-6 last:pb-0'
               >
                 {/* 時間軸點 */}
@@ -85,14 +93,14 @@ const DroppableDateCard = ({
                   moveItem={moveItem}
                   onEdit={onEdit}
                 />
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
       ) : (
         <Empty />
       )}
-    </div>
+    </motion.div>
   );
 };
 
