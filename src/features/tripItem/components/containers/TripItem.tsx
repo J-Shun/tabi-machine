@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import { useParams } from '@tanstack/react-router';
 import useTripItem from '../../hooks/useTripItem';
@@ -19,8 +19,6 @@ const TripItem = () => {
     createTripItem,
     editTripDetail,
     deleteTripDetail,
-    moveDetailToEmptyDate,
-    moveDetailToNewPosition,
   } = useTripItem({ tripId });
 
   const [isShowItemModal, setIsShowItemModal] = useState(false);
@@ -55,43 +53,6 @@ const TripItem = () => {
     setEditingDetail(detail);
     setIsShowItemModal(true);
   };
-
-  const moveItem = useCallback(
-    ({
-      sourceDate,
-      targetDate,
-      dragIndex,
-      hoverIndex,
-    }: {
-      sourceDate: string;
-      targetDate: string;
-      dragIndex: number;
-      hoverIndex: number;
-    }) => {
-      moveDetailToNewPosition({
-        sourceDate,
-        targetDate,
-        dragIndex,
-        hoverIndex,
-      });
-    },
-    [moveDetailToNewPosition]
-  );
-
-  const moveItemBetweenDates = useCallback(
-    ({
-      sourceDate,
-      targetDate,
-      dragIndex,
-    }: {
-      sourceDate: string;
-      targetDate: string;
-      dragIndex: number;
-    }) => {
-      moveDetailToEmptyDate({ sourceDate, targetDate, dragIndex });
-    },
-    [moveDetailToEmptyDate]
-  );
 
   const handleSubmit = (newTripDetail: TripDetail) => {
     const { id } = newTripDetail;
@@ -200,8 +161,6 @@ const TripItem = () => {
               <DroppableDateCard
                 date={tripItem.date}
                 details={tripItem.details}
-                moveItem={moveItem}
-                moveItemBetweenDates={moveItemBetweenDates}
                 onEdit={handleEditDetail}
                 onDelete={handleDelete}
               />

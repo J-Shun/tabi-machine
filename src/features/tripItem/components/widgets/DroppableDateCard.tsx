@@ -1,72 +1,23 @@
-import { useDrop } from 'react-dnd';
 import DraggableTripItemCard from './DraggableTripItemCard';
 import Empty from '../units/Empty';
 import { getTypeColor } from '../../../../helpers';
-import { ItemTypes } from '../../constants/itemTypes';
 import { motion } from 'framer-motion';
 
 import type { TripDetail } from '../../../../types';
 
-interface DragItem {
-  index: number;
-  detail: TripDetail;
-  sourceDate: string;
-  type: string;
-}
-
 const DroppableDateCard = ({
   date,
   details,
-  moveItem,
-  moveItemBetweenDates,
   onEdit,
   onDelete,
 }: {
   date: string;
   details: TripDetail[];
-  moveItem: (params: {
-    sourceDate: string;
-    targetDate: string;
-    dragIndex: number;
-    hoverIndex: number;
-  }) => void;
-  moveItemBetweenDates: (params: {
-    sourceDate: string;
-    targetDate: string;
-    dragIndex: number;
-  }) => void;
   onEdit: (detail: TripDetail) => void;
   onDelete: (detail: TripDetail) => void;
 }) => {
-  const [, drop] = useDrop({
-    accept: ItemTypes.DETAIL_CARD,
-    hover: (item: DragItem) => {
-      // 如果是跨日期移動，且目標日期沒有項目
-      if (item.sourceDate !== date && details.length === 0) {
-        moveItemBetweenDates({
-          sourceDate: item.sourceDate,
-          targetDate: date,
-          dragIndex: item.index,
-        });
-
-        // 更新拖曳來源的索引，好讓後續的 hover 能正確判斷
-        item.index = 0;
-        item.sourceDate = date;
-      }
-    },
-    collect: (monitor) => ({
-      isOver: monitor.isOver(),
-      canDrop: monitor.canDrop(),
-    }),
-  });
-
   return (
-    <motion.div
-      ref={drop as never}
-      className='p-6'
-      layout
-      transition={{ duration: 0.2 }}
-    >
+    <motion.div className='p-6' layout transition={{ duration: 0.2 }}>
       {details.length ? (
         <div className='relative'>
           {/* 連續的時間軸線 */}
@@ -92,7 +43,6 @@ const DroppableDateCard = ({
                   detail={detail}
                   index={index}
                   sourceDate={date}
-                  moveItem={moveItem}
                   onEdit={onEdit}
                   onDelete={onDelete}
                 />
