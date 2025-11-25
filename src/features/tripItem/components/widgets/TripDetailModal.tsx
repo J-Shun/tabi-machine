@@ -188,6 +188,7 @@ const TripDetailModal = ({
         {/* 可拖拉的把手區域 */}
         <div
           className='flex justify-center pt-3 pb-2 cursor-grab active:cursor-grabbing'
+          style={{ touchAction: 'none' }} // 禁用所有觸控手勢
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
