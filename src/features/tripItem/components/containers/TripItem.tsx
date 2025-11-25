@@ -26,6 +26,8 @@ const TripItem = () => {
   const [isShowItemModal, setIsShowItemModal] = useState(false);
   const [editingDetail, setEditingDetail] = useState<TripDetail | null>(null);
 
+  const hasScrolledToToday = useRef(false);
+
   // 用於儲存日期元素的 ref
   const dateRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
@@ -108,7 +110,7 @@ const TripItem = () => {
 
   // 自動捲動到今天日期
   useEffect(() => {
-    if (!tripItems) return;
+    if (!tripItems || hasScrolledToToday.current) return;
 
     const today = new Date();
     // // 格式：YYYY/MM/DD
@@ -138,6 +140,8 @@ const TripItem = () => {
           });
         }
       }, 100);
+
+      hasScrolledToToday.current = true;
     }
   }, [tripItems]);
 
