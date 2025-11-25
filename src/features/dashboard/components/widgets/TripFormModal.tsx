@@ -13,7 +13,6 @@ const TripFormModal = ({ tripData, mode, onClose, onSubmit }: Props) => {
     name: tripData?.name || '',
     startDate: tripData?.startDate || '',
     endDate: tripData?.endDate || '',
-    country: tripData?.country || '',
     coverImage: tripData?.coverImage || '',
     id: tripData?.id || '',
   });
@@ -264,22 +263,6 @@ const TripFormModal = ({ tripData, mode, onClose, onSubmit }: Props) => {
                   />
                 </div>
               </div>
-            </div>
-
-            {/* 目的地國家 */}
-            <div>
-              <div className='flex items-center space-x-2 mb-3'>
-                <label className='text-base font-semibold text-gray-800'>
-                  目的地
-                </label>
-              </div>
-              <input
-                type='text'
-                value={form.country}
-                onChange={(e) => setForm({ ...form, country: e.target.value })}
-                className='w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition-all'
-                placeholder='例：日本'
-              />
             </div>
 
             {/* 封面照片 */}

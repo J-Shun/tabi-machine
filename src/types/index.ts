@@ -3,7 +3,6 @@ export interface Trip {
   name: string;
   startDate: string;
   endDate: string;
-  country?: string;
   coverImage?: string;
 }
 
