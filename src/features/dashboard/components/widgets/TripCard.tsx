@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { formatDate, getDuration } from '../../../../helpers';
 import MenuButton from '../../../../components/units/MenuButton';
+import PolaroidTravelIcon from '../../../../components/units/PolaroidTravelIcon';
 
 import type { Trip } from '../../../../types';
 
@@ -59,8 +60,8 @@ const TripCard = ({ trip, onClick, onEdit, onDelete }: Props) => {
                 className='w-full h-full object-cover filter sepia-[0.1] contrast-[1.1] brightness-[1.05]'
               />
             ) : (
-              <div className='w-full h-full bg-linear-to-br from-amber-50 via-orange-50 to-yellow-50 flex items-center justify-center'>
-                <div className='text-4xl opacity-60'>🗺️</div>
+              <div className='w-full h-full bg-linear-to-br from-amber-50 via-orange-50 to-yellow-50 flex items-center justify-center relative'>
+                <PolaroidTravelIcon />
               </div>
             )}
 
