@@ -10,8 +10,6 @@ const DraggableTripItemCard = ({
   onDelete,
 }: {
   detail: TripDetail;
-  index: number;
-  sourceDate: string;
   onEdit: (detail: TripDetail) => void;
   onDelete: (detail: TripDetail) => void;
 }) => {
