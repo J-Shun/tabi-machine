@@ -35,6 +35,15 @@ const TripItem = () => {
     navigate({ to: '/' });
   };
 
+  // 判斷是否為今天
+  const isToday = (date: string) => {
+    const today = new Date();
+    const todayString = `${today.getFullYear()}/${String(
+      today.getMonth() + 1
+    ).padStart(2, '0')}/${String(today.getDate()).padStart(2, '0')}`;
+    return date === todayString;
+  };
+
   const handleCloseItemModal = () => {
     setIsShowItemModal(false);
     setEditingDetail(null);
@@ -154,34 +163,47 @@ const TripItem = () => {
 
       {/* 行程內容 */}
       <div className='p-4 space-y-6 pb-24'>
-        {tripItems.map((tripItem, dayIndex) => (
-          <div
-            key={tripItem.date}
-            ref={(el) => {
-              dateRefs.current[tripItem.date] = el;
-            }}
-            className='bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden'
-          >
-            {/* 日期標題區塊 */}
-            <div className='bg-linear-to-r from-blue-500 to-blue-600 px-6 py-4 flex items-center justify-between'>
-              <div className='text-white'>
-                <h2 className='text-xl font-bold mb-1'>Day {dayIndex + 1}</h2>
-                <p className='text-blue-100 text-sm'>
-                  {tripItem.date} ({tripItem.weekDay})
-                </p>
-              </div>
-            </div>
+        {tripItems.map((tripItem, dayIndex) => {
+          const isTodayCard = isToday(tripItem.date);
 
-            <DroppableDateCard
-              date={tripItem.date}
-              details={tripItem.details}
-              moveItem={moveItem}
-              moveItemBetweenDates={moveItemBetweenDates}
-              onEdit={handleEditDetail}
-              onDelete={handleDelete}
-            />
-          </div>
-        ))}
+          return (
+            <div
+              key={tripItem.date}
+              ref={(el) => {
+                dateRefs.current[tripItem.date] = el;
+              }}
+              className='bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden'
+            >
+              {/* 日期標題區塊 */}
+              <div className='bg-linear-to-r from-blue-500 to-blue-600 px-6 py-4 flex items-center justify-between'>
+                <div className='text-white'>
+                  <div className='flex items-center gap-2'>
+                    <h2 className='text-xl font-bold mb-1'>
+                      Day {dayIndex + 1}
+                    </h2>
+                    {isTodayCard && (
+                      <span className='bg-white/20 px-2 py-1 rounded-full text-xs font-medium'>
+                        今天
+                      </span>
+                    )}
+                  </div>
+                  <p className='text-blue-100 text-sm'>
+                    {tripItem.date} ({tripItem.weekDay})
+                  </p>
+                </div>
+              </div>
+
+              <DroppableDateCard
+                date={tripItem.date}
+                details={tripItem.details}
+                moveItem={moveItem}
+                moveItemBetweenDates={moveItemBetweenDates}
+                onEdit={handleEditDetail}
+                onDelete={handleDelete}
+              />
+            </div>
+          );
+        })}
       </div>
 
       {/* 浮動新增按鈕 */}
