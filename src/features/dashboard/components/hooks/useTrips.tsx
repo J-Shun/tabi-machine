@@ -44,6 +44,8 @@ const useTrips = () => {
     try {
       const payload = trips.filter((trip) => trip.id !== tripId);
       localStorage.setItem('trips', JSON.stringify(payload));
+      // 刪除該行程的詳細資料
+      localStorage.removeItem(tripId);
       setTrips(payload);
     } catch (error) {
       console.error('Failed to delete trip:', error);

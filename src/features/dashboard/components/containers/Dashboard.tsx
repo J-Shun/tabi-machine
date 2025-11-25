@@ -42,9 +42,7 @@ const Dashboard = () => {
   };
 
   const handleDelete = (tripId: string) => {
-    if (window.confirm('確定要刪除此行程嗎？此動作無法復原。')) {
-      deleteTrip(tripId);
-    }
+    deleteTrip(tripId);
   };
 
   return (
