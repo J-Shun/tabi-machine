@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { createUUID } from '../../../../helpers';
+import { createUUID, getDates } from '../../../../helpers';
 import type { Trip } from '../../../../types';
 
 // 在尚未有 API 時，先使用 localStorage 處理
@@ -19,6 +19,19 @@ const useTrips = () => {
       // 更新本地狀態
       // TODO: 若未來有 API，這邊要改成重新抓取最新資料
       setTrips(payload);
+
+      // 初始化該行程的詳細資料
+      const allDates = getDates({
+        startDate: trip.startDate,
+        endDate: trip.endDate,
+      });
+      const initialData = allDates.map((date) => ({
+        date: date.date,
+        weekDay: date.weekDay,
+        details: [],
+      }));
+      const initialDataString = JSON.stringify(initialData);
+      localStorage.setItem(trip.id, initialDataString);
     } catch (error) {
       console.error('Failed to create trip:', error);
     }

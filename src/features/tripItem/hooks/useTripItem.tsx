@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getDates, createUUID } from '../../../helpers';
+import { createUUID } from '../../../helpers';
 
 import type { Trip, TripDetail, TripItem } from '../../../types';
 
@@ -184,6 +184,7 @@ const useTripItem = ({ tripId }: { tripId: string }) => {
   };
 
   useEffect(() => {
+    // 從 trip 中抓出行程名稱
     const trips = localStorage.getItem('trips');
     if (!trips) return;
     const parsedTrips: Trip[] = JSON.parse(trips);
@@ -191,27 +192,12 @@ const useTripItem = ({ tripId }: { tripId: string }) => {
 
     if (!targetTrip) return;
     setTripName(targetTrip.name);
-    const allDates = getDates({
-      startDate: targetTrip.startDate,
-      endDate: targetTrip.endDate,
-    });
 
+    // 抓出詳細資料
     const tripIdData = localStorage.getItem(tripId);
-    // 沒有任何資料，新建空資料
-    if (!tripIdData) {
-      const initialData = allDates.map((date) => ({
-        date: date.date,
-        weekDay: date.weekDay,
-        details: [],
-      }));
-      const initialDataString = JSON.stringify(initialData);
-      localStorage.setItem(tripId, initialDataString);
-      setTripItems(initialData);
-    } else {
-      // 有資料就讀取
-      const parsedTripItems = JSON.parse(tripIdData);
-      setTripItems(parsedTripItems);
-    }
+    if (!tripIdData) return;
+    const parsedTripItems = JSON.parse(tripIdData);
+    setTripItems(parsedTripItems);
   }, [tripId]);
 
   return {
