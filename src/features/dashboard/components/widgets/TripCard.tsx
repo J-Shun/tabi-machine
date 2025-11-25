@@ -47,56 +47,45 @@ const TripCard = ({ trip, onClick, onEdit, onDelete }: Props) => {
 
   return (
     <div className='relative'>
-      <div
-        onClick={handleCardClick}
-        className='bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-all active:scale-[0.98] cursor-pointer'
-      >
-        {/* 封面區域 */}
-        <div className='h-32 bg-linear-to-br from-indigo-400 via-purple-400 to-pink-400 relative overflow-hidden'>
-          {trip.coverImage && (
-            <img
-              src={trip.coverImage}
-              alt={trip.name}
-              className='w-full h-full object-cover'
-            />
-          )}
+      <div onClick={handleCardClick} className='cursor-pointer'>
+        {/* 拍立得整體 */}
+        <div className='bg-white rounded-2xl shadow-lg border-2 border-gray-100 p-4 hover:shadow-xl transition-all active:scale-[0.98] rotate-1 hover:rotate-0 duration-300'>
+          {/* 圖片區域 */}
+          <div className='aspect-square relative overflow-hidden rounded-lg mb-4'>
+            {trip.coverImage ? (
+              <img
+                src={trip.coverImage}
+                alt={trip.name}
+                className='w-full h-full object-cover filter sepia-[0.1] contrast-[1.1] brightness-[1.05]'
+              />
+            ) : (
+              <div className='w-full h-full bg-linear-to-br from-amber-50 via-orange-50 to-yellow-50 flex items-center justify-center'>
+                <div className='text-4xl opacity-60'>🗺️</div>
+              </div>
+            )}
 
-          {!trip.coverImage && (
-            <div className='w-full h-full flex items-center justify-center'>
-              <div className='text-3xl'>🗺️</div>
+            {/* 右上角三點按鈕 */}
+            <div className='absolute top-2 right-2'>
+              <MenuButton onClick={handleMenuToggle} />
             </div>
-          )}
-
-          {/* 左上角標籤 */}
-          {trip.country && (
-            <div className='absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full flex justify-center'>
-              <span className='text-xs font-medium text-gray-700'>
-                {trip.country}
-              </span>
-            </div>
-          )}
-
-          {/* 右上角三點按鈕 */}
-          <div className='absolute top-3 right-3'>
-            <MenuButton onClick={handleMenuToggle} />
           </div>
-        </div>
 
-        {/* 內容區域 */}
-        <div className='p-4'>
-          <h3 className='font-semibold text-gray-800 text-lg mb-2 line-clamp-1'>
-            {trip.name}
-          </h3>
+          {/* 內容區域（拍立得下方留白） */}
+          <div className='space-y-2'>
+            <h3 className='font-semibold text-gray-800 text-lg line-clamp-1'>
+              {trip.name}
+            </h3>
 
-          <div className='flex items-center justify-between text-sm'>
-            <div className='flex items-center space-x-1 text-gray-600'>
-              <span>🗓️</span>
-              <span>
-                {start} - {end}
-              </span>
-            </div>
-            <div className='bg-blue-50 text-blue-600 px-2 py-1 rounded-full text-xs font-medium'>
-              {duration} 天
+            <div className='flex items-center justify-between text-sm'>
+              <div className='flex items-center space-x-1 text-gray-600'>
+                <span>🗓️</span>
+                <span>
+                  {start} - {end}
+                </span>
+              </div>
+              <div className='bg-amber-50 text-amber-700 px-2 py-1 rounded-full text-xs font-medium border border-amber-200'>
+                {duration} 天
+              </div>
             </div>
           </div>
         </div>
@@ -112,7 +101,7 @@ const TripCard = ({ trip, onClick, onEdit, onDelete }: Props) => {
           />
 
           {/* 選單 */}
-          <div className='absolute top-12 right-3 z-20 bg-white rounded-lg shadow-lg border border-gray-200 py-1 min-w-[120px]'>
+          <div className='absolute top-12 right-7 z-20 bg-white rounded-lg shadow-lg border border-gray-200 py-1 min-w-[120px]'>
             <button
               onClick={handleEdit}
               className='w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center justify-center space-x-2 cursor-pointer'
