@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import { useParams } from '@tanstack/react-router';
 import useTripItem from '../../hooks/useTripItem';
@@ -25,6 +25,9 @@ const TripItem = () => {
 
   const [isShowItemModal, setIsShowItemModal] = useState(false);
   const [editingDetail, setEditingDetail] = useState<TripDetail | null>(null);
+
+  // 用於儲存日期元素的 ref
+  const dateRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
   const dateOptions = tripItems ? tripItems.map((item) => item.date) : [];
 
@@ -94,6 +97,41 @@ const TripItem = () => {
     deleteTripDetail(detail);
   };
 
+  // 自動捲動到今天日期
+  useEffect(() => {
+    if (!tripItems) return;
+
+    const today = new Date();
+    // // 格式：YYYY/MM/DD
+    const todayString = `${today.getFullYear()}/${String(
+      today.getMonth() + 1
+    ).padStart(2, '0')}/${String(today.getDate()).padStart(2, '0')}`;
+
+    // 找到今天對應的行程日期
+    const todayTripItem = tripItems.find((item) => {
+      return item.date === todayString;
+    });
+
+    if (todayTripItem && dateRefs.current[todayTripItem.date]) {
+      // 延遲執行以確保元素已渲染
+      setTimeout(() => {
+        // 滾動時要把標題列考慮進去
+        const headerOffset = 92;
+        const element = dateRefs.current[todayTripItem.date];
+        if (element) {
+          const elementPosition =
+            element.getBoundingClientRect().top + window.pageYOffset;
+          const offsetPosition = elementPosition - headerOffset;
+
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth',
+          });
+        }
+      }, 100);
+    }
+  }, [tripItems]);
+
   if (!tripItems) return <Loading />;
 
   return (
@@ -119,6 +157,9 @@ const TripItem = () => {
         {tripItems.map((tripItem, dayIndex) => (
           <div
             key={tripItem.date}
+            ref={(el) => {
+              dateRefs.current[tripItem.date] = el;
+            }}
             className='bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden'
           >
             {/* 日期標題區塊 */}
