@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { createUUID, getDates } from '../../../../helpers';
-import type { Trip } from '../../../../types';
+import type { Trip, TripDetail } from '../../../../types';
 
 // 在尚未有 API 時，先使用 localStorage 處理
 const useTrips = () => {
@@ -48,6 +48,33 @@ const useTrips = () => {
 
       localStorage.setItem('trips', JSON.stringify(payload));
       setTrips(payload);
+
+      // 若行程日期有變更，需更新該行程的詳細資料結構，日期有少的要刪除，多的要新增
+      const storedDetails = localStorage.getItem(id);
+      if (!storedDetails) return;
+
+      const parsedDetails: {
+        date: string;
+        weekDay: string;
+        details: TripDetail[];
+      }[] = JSON.parse(storedDetails);
+
+      const allDates = getDates({
+        startDate: updatedTrip.startDate,
+        endDate: updatedTrip.endDate,
+      });
+
+      const updatedDetails = allDates.map((date) => {
+        const existingDate = parsedDetails.find(
+          (detail) => detail.date === date.date
+        );
+        return existingDate
+          ? existingDate
+          : { date: date.date, weekDay: date.weekDay, details: [] };
+      });
+
+      const updatedDetailsString = JSON.stringify(updatedDetails);
+      localStorage.setItem(id, updatedDetailsString);
     } catch (error) {
       console.error('Failed to edit trip:', error);
     }

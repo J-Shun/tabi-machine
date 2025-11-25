@@ -58,7 +58,7 @@ const TripCard = ({ trip, onClick, onEdit, onDelete }: Props) => {
       <div className='relative'>
         <div onClick={handleCardClick} className='cursor-pointer'>
           {/* 拍立得整體 */}
-          <div className='bg-white rounded-2xl shadow-lg border-2 border-gray-100 p-4 hover:shadow-xl transition-all active:scale-[0.98] rotate-1 hover:rotate-0 duration-300'>
+          <div className='bg-white rounded-2xl shadow-lg border-2 border-gray-100 p-4 hover:shadow-xl transition-all active:scale-[0.98] rotate-0 hover:rotate-1 duration-300'>
             {/* 圖片區域 */}
             <div className='aspect-square relative overflow-hidden rounded-lg mb-4'>
               {trip.coverImage ? (
