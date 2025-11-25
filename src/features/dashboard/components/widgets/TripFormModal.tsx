@@ -280,7 +280,7 @@ const TripFormModal = ({ tripData, mode, onClose, onSubmit }: Props) => {
                     <img
                       src={form.coverImage}
                       alt='封面預覽'
-                      className='w-full h-40 object-cover rounded-2xl'
+                      className='w-full aspect-square object-cover rounded-2xl'
                     />
                     <button
                       type='button'
@@ -293,7 +293,7 @@ const TripFormModal = ({ tripData, mode, onClose, onSubmit }: Props) => {
                 )}
 
                 {!form.coverImage && (
-                  <label className='block w-full h-40 border-2 border-dashed border-gray-300 rounded-2xl cursor-pointer hover:border-blue-400 hover:bg-blue-50/50 transition-all'>
+                  <label className='block w-full aspect-square border-2 border-dashed border-gray-300 rounded-2xl cursor-pointer hover:border-blue-400 hover:bg-blue-50/50 transition-all'>
                     <div className='flex flex-col items-center justify-center h-full'>
                       <span className='text-sm text-gray-600 font-medium'>
                         點擊上傳照片
