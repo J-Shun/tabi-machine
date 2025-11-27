@@ -159,7 +159,6 @@ const TripItem = () => {
               </div>
 
               <DroppableDateCard
-                date={tripItem.date}
                 details={tripItem.details}
                 onEdit={handleEditDetail}
                 onDelete={handleDelete}

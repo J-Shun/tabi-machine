@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import MapButton from '../../../../components/units/MapButton';
+import DeleteButton from '../../../../components/units/DeleteButton';
 import Dialog from '../../../../components/units/Dialog';
 
 import type { TripDetail } from '../../../../types';
@@ -41,25 +42,7 @@ const DraggableTripItemCard = ({
             <h3 className='font-semibold text-gray-800'>{detail.title}</h3>
 
             {/* 刪除按鈕 */}
-            <button
-              onClick={handleDelete}
-              className='group w-8 h-8 rounded-full flex items-center justify-center transition-colors z-10 cursor-pointer'
-              aria-label={`刪除 ${detail.title}`}
-            >
-              <svg
-                className='w-4 h-4 text-gray-600 group-hover:text-red-600'
-                fill='none'
-                stroke='currentColor'
-                viewBox='0 0 24 24'
-              >
-                <path
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                  strokeWidth={2}
-                  d='M6 18L18 6M6 6l12 12'
-                />
-              </svg>
-            </button>
+            <DeleteButton onClick={handleDelete} />
           </div>
           <MapButton location={detail.location} />
         </div>
