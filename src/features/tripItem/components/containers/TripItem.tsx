@@ -200,6 +200,11 @@ const TripItem = () => {
 
   if (!tripItems) return <Loading />;
 
+  // 收集所有 detail 的 id，用於統一的 SortableContext
+  const allDetailIds = tripItems.flatMap((tripItem) =>
+    tripItem.details.map((detail) => detail.id)
+  );
+
   return (
     <DndContext
       sensors={sensors}
@@ -207,60 +212,61 @@ const TripItem = () => {
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <div className='min-h-screen bg-gray-50'>
-        {/* 標題列 */}
-        <div className='bg-white shadow-sm sticky top-0 z-50'>
-          <div className='p-4 flex items-center'>
-            <button
-              onClick={handleBack}
-              className='mr-3 p-2 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer'
-            >
-              <span className='text-xl'>←</span>
-            </button>
-            <div className='flex-1'>
-              <h1 className='text-lg font-bold text-gray-800'>{tripName}</h1>
-              <p className='text-sm text-gray-500'>{tripItems.length} 天行程</p>
+      <SortableContext
+        items={allDetailIds}
+        strategy={verticalListSortingStrategy}
+      >
+        <div className='min-h-screen bg-gray-50'>
+          {/* 標題列 */}
+          <div className='bg-white shadow-sm sticky top-0 z-50'>
+            <div className='p-4 flex items-center'>
+              <button
+                onClick={handleBack}
+                className='mr-3 p-2 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer'
+              >
+                <span className='text-xl'>←</span>
+              </button>
+              <div className='flex-1'>
+                <h1 className='text-lg font-bold text-gray-800'>{tripName}</h1>
+                <p className='text-sm text-gray-500'>
+                  {tripItems.length} 天行程
+                </p>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* 行程內容 */}
-        <div className='p-4 space-y-6 pb-24'>
-          {tripItems.map((tripItem, dayIndex) => {
-            const isTodayCard = isToday(tripItem.date);
-            const detailIds = tripItem.details.map((detail) => detail.id);
+          {/* 行程內容 */}
+          <div className='p-4 space-y-6 pb-24'>
+            {tripItems.map((tripItem, dayIndex) => {
+              const isTodayCard = isToday(tripItem.date);
 
-            return (
-              <div
-                key={tripItem.date}
-                ref={(el) => {
-                  dateRefs.current[tripItem.date] = el;
-                }}
-                className='bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden'
-              >
-                {/* 日期標題區塊 */}
-                <div className='bg-linear-to-r from-blue-500 to-blue-600 px-6 py-4 flex items-center justify-between'>
-                  <div className='text-white'>
-                    <div className='flex items-center gap-2'>
-                      <h2 className='text-xl font-bold mb-1'>
-                        Day {dayIndex + 1}
-                      </h2>
-                      {isTodayCard && (
-                        <span className='bg-white/20 px-2 py-1 rounded-full text-xs font-medium'>
-                          今天
-                        </span>
-                      )}
-                    </div>
-                    <p className='text-blue-100 text-sm'>
-                      {tripItem.date} ({tripItem.weekDay})
-                    </p>
-                  </div>
-                </div>
-
-                <SortableContext
-                  items={detailIds}
-                  strategy={verticalListSortingStrategy}
+              return (
+                <div
+                  key={tripItem.date}
+                  ref={(el) => {
+                    dateRefs.current[tripItem.date] = el;
+                  }}
+                  className='bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden'
                 >
+                  {/* 日期標題區塊 */}
+                  <div className='bg-linear-to-r from-blue-500 to-blue-600 px-6 py-4 flex items-center justify-between'>
+                    <div className='text-white'>
+                      <div className='flex items-center gap-2'>
+                        <h2 className='text-xl font-bold mb-1'>
+                          Day {dayIndex + 1}
+                        </h2>
+                        {isTodayCard && (
+                          <span className='bg-white/20 px-2 py-1 rounded-full text-xs font-medium'>
+                            今天
+                          </span>
+                        )}
+                      </div>
+                      <p className='text-blue-100 text-sm'>
+                        {tripItem.date} ({tripItem.weekDay})
+                      </p>
+                    </div>
+                  </div>
+
                   <div id={tripItem.date} className='p-6 min-h-[100px]'>
                     {tripItem.details.length ? (
                       <div className='relative'>
@@ -294,33 +300,33 @@ const TripItem = () => {
                       <Empty />
                     )}
                   </div>
-                </SortableContext>
-              </div>
-            );
-          })}
-        </div>
+                </div>
+              );
+            })}
+          </div>
 
-        {/* 浮動新增按鈕 */}
-        <div className='fixed bottom-6 right-6 z-20'>
-          <button
-            className='w-14 h-14 bg-blue-500 hover:bg-blue-600 active:scale-95 rounded-full flex items-center justify-center shadow-lg transition-all cursor-pointer'
-            onClick={() => setIsShowItemModal(true)}
-          >
-            <span className='text-white text-2xl font-bold'>+</span>
-          </button>
-        </div>
+          {/* 浮動新增按鈕 */}
+          <div className='fixed bottom-6 right-6 z-20'>
+            <button
+              className='w-14 h-14 bg-blue-500 hover:bg-blue-600 active:scale-95 rounded-full flex items-center justify-center shadow-lg transition-all cursor-pointer'
+              onClick={() => setIsShowItemModal(true)}
+            >
+              <span className='text-white text-2xl font-bold'>+</span>
+            </button>
+          </div>
 
-        {/* 行程項目詳情彈窗 */}
-        {isShowItemModal && (
-          <TripDetailModal
-            itemData={editingDetail}
-            dateOptions={dateOptions}
-            mode={editingDetail ? 'edit' : 'create'}
-            onClose={handleCloseItemModal}
-            onSubmit={handleSubmit}
-          />
-        )}
-      </div>
+          {/* 行程項目詳情彈窗 */}
+          {isShowItemModal && (
+            <TripDetailModal
+              itemData={editingDetail}
+              dateOptions={dateOptions}
+              mode={editingDetail ? 'edit' : 'create'}
+              onClose={handleCloseItemModal}
+              onSubmit={handleSubmit}
+            />
+          )}
+        </div>
+      </SortableContext>
 
       {/* 拖拽預覽 */}
       {createPortal(
