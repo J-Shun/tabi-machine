@@ -80,7 +80,7 @@ const DraggableTripItemCard = ({
           {...attributes}
           {...listeners}
           onClick={handleDragHandleClick}
-          className={`flex items-center justify-center w-6 ml-3 transition-opacity duration-200 cursor-grab active:cursor-grabbing ${
+          className={`flex items-center justify-center w-6 ml-3 transition-opacity duration-200 cursor-grab touch-none active:cursor-grabbing ${
             isDragging ? 'opacity-100' : ''
           }`}
           style={{
