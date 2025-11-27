@@ -47,29 +47,64 @@ const DraggableTripItemCard = ({
     setIsShowDeleteDialog(false);
   };
 
+  const handleDragHandleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+  };
+
   return (
     <>
-      <div
-        ref={setNodeRef}
-        style={style}
-        {...attributes}
-        {...listeners}
-        onClick={handleClick}
-        className={`flex w-full bg-gray-50 rounded-xl p-4 m-0 shadow-sm cursor-pointer hover:bg-gray-100 transition-colors relative touch-none ${
-          isDragging ? 'opacity-50' : ''
-        }`}
-      >
-        <div className='w-full'>
-          <div className='flex items-center justify-between space-x-2 mb-2'>
-            {/* 標題和地點 */}
-            <h3 className='font-semibold text-gray-800'>{detail.title}</h3>
+      <div className='relative flex items-center w-full'>
+        {/* 主要卡片內容 */}
+        <div
+          ref={setNodeRef}
+          style={style}
+          onClick={handleClick}
+          className={`flex w-full bg-gray-50 rounded-xl p-4 m-0 shadow-sm cursor-pointer hover:bg-gray-100 transition-colors relative ${
+            isDragging ? 'opacity-50' : ''
+          }`}
+        >
+          <div className='w-full'>
+            <div className='flex items-center justify-between space-x-2 mb-2'>
+              {/* 標題和地點 */}
+              <h3 className='font-semibold text-gray-800'>{detail.title}</h3>
 
-            {/* 刪除按鈕 */}
-            <DeleteButton onClick={handleDelete} />
+              {/* 刪除按鈕 */}
+              <DeleteButton onClick={handleDelete} />
+            </div>
+            <MapButton location={detail.location} />
           </div>
-          <MapButton location={detail.location} />
+        </div>
+
+        {/* 拖拽把手 - 書籤樣式 */}
+        <div
+          {...attributes}
+          {...listeners}
+          onClick={handleDragHandleClick}
+          className={`flex items-center justify-center w-6 ml-3 transition-opacity duration-200 cursor-grab active:cursor-grabbing ${
+            isDragging ? 'opacity-100' : ''
+          }`}
+          style={{
+            width: '24px',
+            height: '32px',
+          }}
+        >
+          <svg
+            width='12'
+            height='16'
+            viewBox='0 0 12 16'
+            fill='none'
+            className='text-gray-400 hover:text-gray-600 transition-colors'
+          >
+            <circle cx='3' cy='3' r='1.5' fill='currentColor' />
+            <circle cx='9' cy='3' r='1.5' fill='currentColor' />
+            <circle cx='3' cy='8' r='1.5' fill='currentColor' />
+            <circle cx='9' cy='8' r='1.5' fill='currentColor' />
+            <circle cx='3' cy='13' r='1.5' fill='currentColor' />
+            <circle cx='9' cy='13' r='1.5' fill='currentColor' />
+          </svg>
         </div>
       </div>
+
       <Dialog
         isOpen={isShowDeleteDialog}
         onClose={() => setIsShowDeleteDialog(false)}
