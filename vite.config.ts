@@ -23,6 +23,10 @@ export default defineConfig(({ mode }) => {
       react(),
       tailwindcss(),
     ],
+    optimizeDeps: {
+      force: true, // 強制重新預構建依賴
+      include: ['@dnd-kit/core', '@dnd-kit/sortable', '@dnd-kit/utilities'],
+    },
     server: hasCerts
       ? {
           https: {
@@ -31,6 +35,11 @@ export default defineConfig(({ mode }) => {
           },
           host: 'localhost',
           port: 5174,
+          hmr: {
+            clientPort: 5174,
+            port: 5174,
+          },
+          cors: true,
         }
       : {
           host: 'localhost',
