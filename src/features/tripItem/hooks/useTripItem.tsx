@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { createUUID } from '../../../helpers';
+import { arrayMove } from '@dnd-kit/sortable';
 
 import type { Trip, TripDetail, TripItem } from '../../../types';
 
@@ -36,43 +37,43 @@ const useTripItem = ({ tripId }: { tripId: string }) => {
     }
   };
 
-  const moveDetailToNewPosition = ({
-    sourceDate,
-    targetDate,
-    dragIndex,
-    hoverIndex,
+  const moveToOtherDate = ({
+    detailId,
+    fromDate,
+    toDate,
   }: {
-    sourceDate: string;
-    targetDate: string;
-    dragIndex: number;
-    hoverIndex: number;
+    detailId: string;
+    fromDate: string;
+    toDate: string;
   }) => {
     if (!tripItems) return;
 
     // 複製一份 tripItems 資料
     const newTripItems = [...tripItems];
 
-    const sourceDateIndex = newTripItems.findIndex(
-      (item) => item.date === sourceDate
+    const fromDateIndex = newTripItems.findIndex(
+      (item) => item.date === fromDate
     );
-    const targetDateIndex = newTripItems.findIndex(
-      (item) => item.date === targetDate
-    );
+    const toDateIndex = newTripItems.findIndex((item) => item.date === toDate);
 
     // 找不到日期就返回
-    if (sourceDateIndex === -1 || targetDateIndex === -1) return;
+    if (fromDateIndex === -1 || toDateIndex === -1) return;
 
     // 從來源日期移除項目
-    const [movedItem] = newTripItems[sourceDateIndex].details.splice(
-      dragIndex,
+    const detailIndex = newTripItems[fromDateIndex].details.findIndex(
+      (detail) => detail.id === detailId
+    );
+    if (detailIndex === -1) return;
+
+    const [movedItem] = newTripItems[fromDateIndex].details.splice(
+      detailIndex,
       1
     );
 
-    // 將 Detail 的日期更新為目標日期
-    movedItem.date = targetDate;
-
-    // 插入到目標日期的指定位置
-    newTripItems[targetDateIndex].details.splice(hoverIndex, 0, movedItem);
+    // 更新項目的日期
+    const updatedItem = { ...movedItem, date: toDate };
+    // 插入到目標日期的末尾
+    newTripItems[toDateIndex].details.push(updatedItem);
 
     // 更新本地存儲
     localStorage.setItem(tripId, JSON.stringify(newTripItems));
@@ -81,40 +82,43 @@ const useTripItem = ({ tripId }: { tripId: string }) => {
     setTripItems(newTripItems);
   };
 
-  const moveDetailToEmptyDate = ({
-    sourceDate,
-    targetDate,
-    dragIndex,
+  const moveToOtherIndex = ({
+    detailId,
+    targetId,
+    date,
   }: {
-    sourceDate: string;
-    targetDate: string;
-    dragIndex: number;
+    detailId: string;
+    targetId: string;
+    date: string;
   }) => {
     if (!tripItems) return;
 
     // 複製一份 tripItems 資料
     const newTripItems = [...tripItems];
 
-    const sourceDateIndex = newTripItems.findIndex(
-      (item) => item.date === sourceDate
-    );
-    const targetDateIndex = newTripItems.findIndex(
-      (item) => item.date === targetDate
-    );
+    const dateIndex = newTripItems.findIndex((item) => item.date === date);
 
     // 找不到日期就返回
-    if (sourceDateIndex === -1 || targetDateIndex === -1) return;
+    if (dateIndex === -1) return;
 
-    // 從來源日期移除項目
-    const [movedItem] = newTripItems[sourceDateIndex].details.splice(
-      dragIndex,
-      1
+    const detailIndex = newTripItems[dateIndex].details.findIndex(
+      (detail) => detail.id === detailId
+    );
+    const targetIndex = newTripItems[dateIndex].details.findIndex(
+      (detail) => detail.id === targetId
     );
 
-    // 更新項目的日期
-    const updatedItem = { ...movedItem, date: targetDate };
-    // 插入到目標日期的末尾
-    newTripItems[targetDateIndex].details.push(updatedItem);
+    // 找不到項目就返回
+    if (detailIndex === -1 || targetIndex === -1) return;
+
+    // 重新排序
+    const updatedDetails = arrayMove(
+      newTripItems[dateIndex].details,
+      detailIndex,
+      targetIndex
+    );
+
+    newTripItems[dateIndex].details = updatedDetails;
 
     // 更新本地存儲
     localStorage.setItem(tripId, JSON.stringify(newTripItems));
@@ -204,10 +208,10 @@ const useTripItem = ({ tripId }: { tripId: string }) => {
     tripName,
     tripItems,
     createTripItem,
-    moveDetailToEmptyDate,
-    moveDetailToNewPosition,
     editTripDetail,
     deleteTripDetail,
+    moveToOtherDate,
+    moveToOtherIndex,
   };
 };
 

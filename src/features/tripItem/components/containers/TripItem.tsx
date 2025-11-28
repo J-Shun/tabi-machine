@@ -2,15 +2,11 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams } from '@tanstack/react-router';
 import {
   DndContext,
-  PointerSensor,
-  useSensor,
-  useSensors,
   closestCorners,
+  useDroppable,
+  DragOverlay,
 } from '@dnd-kit/core';
-import {
-  SortableContext,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
+import { SortableContext } from '@dnd-kit/sortable';
 import useTripItem from '../../hooks/useTripItem';
 import TripDetailModal from '../widgets/TripDetailModal';
 import Loading from '../../../../components/units/Loading';
@@ -19,9 +15,12 @@ import FloatButton from '../../../../components/units/FloatButton';
 import Empty from '../units/Empty';
 import TripHeader from '../widgets/TripHeader';
 import TripItemHeader from '../widgets/TripItemHeader';
-import Test from '../containers/Test';
 
-import type { DragEndEvent } from '@dnd-kit/core';
+import type {
+  DragEndEvent,
+  DragStartEvent,
+  DragOverEvent,
+} from '@dnd-kit/core';
 import type { TripDetail } from '../../../../types';
 import TimelineNode from '../units/TimelineNode';
 
@@ -34,9 +33,11 @@ const TripItem = () => {
     createTripItem,
     editTripDetail,
     deleteTripDetail,
-    moveDetailToNewPosition,
+    moveToOtherDate,
+    moveToOtherIndex,
   } = useTripItem({ tripId });
 
+  const [activeId, setActiveId] = useState<string | null>(null);
   const [isShowItemModal, setIsShowItemModal] = useState(false);
   const [editingDetail, setEditingDetail] = useState<TripDetail | null>(null);
 
@@ -46,15 +47,6 @@ const TripItem = () => {
   const dateRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
   const dateOptions = tripItems ? tripItems.map((item) => item.date) : [];
-
-  // 設定拖拽感測器
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 8,
-      },
-    })
-  );
 
   const handleCloseItemModal = () => {
     setIsShowItemModal(false);
@@ -81,57 +73,69 @@ const TripItem = () => {
     deleteTripDetail(detail);
   };
 
-  // 找到指定 detail 的位置資訊
-  const findDetailPosition = (detailId: string) => {
-    if (!tripItems) return null;
+  const getActiveDetail = () => {
+    if (!activeId || !tripItems) return null;
 
     for (const tripItem of tripItems) {
-      const detailIndex = tripItem.details.findIndex(
-        (detail) => detail.id === detailId
-      );
-      if (detailIndex !== -1) {
-        return {
-          date: tripItem.date,
-          index: detailIndex,
-          detail: tripItem.details[detailIndex],
-        };
-      }
+      const detail = tripItem.details.find((d) => d.id === activeId);
+      if (detail) return detail;
     }
     return null;
+  };
+
+  const findContainer = (id: string) => {
+    if (!tripItems) return id;
+
+    for (const tripItem of tripItems) {
+      if (tripItem.details.some((detail) => detail.id === id)) {
+        return tripItem.date;
+      }
+    }
+    return id;
+  };
+
+  const handleDragStart = (event: DragStartEvent) => {
+    const { active } = event;
+    setActiveId(active.id as string);
+  };
+
+  const handleDragOver = (event: DragOverEvent) => {
+    const { active, over } = event;
+    if (!over) return;
+
+    const activeContainer = findContainer(active.id as string);
+    const overContainer = findContainer(over.id as string);
+
+    // 移往不同容器時，重新排序
+    if (activeContainer === overContainer) return;
+    console.log('over');
+
+    moveToOtherDate({
+      detailId: active.id as string,
+      fromDate: activeContainer,
+      toDate: overContainer,
+    });
   };
 
   // 拖拽結束
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
+    setActiveId(null);
 
-    if (!over || !tripItems) return;
+    if (!over) return;
 
-    const activePosition = findDetailPosition(active.id as string);
-    if (!activePosition) return;
+    const activeContainer = findContainer(active.id as string);
+    const overContainer = findContainer(over.id as string);
 
-    // 檢查是否拖拽到其他 detail
-    const overPosition = findDetailPosition(over.id as string);
-    if (!overPosition) return;
+    // 在同一容器內重新排序
+    if (activeContainer !== overContainer) return;
+    console.log('end');
 
-    if (activePosition.date === overPosition.date) {
-      // 同一天內的排序
-      if (activePosition.index !== overPosition.index) {
-        moveDetailToNewPosition({
-          sourceDate: activePosition.date,
-          targetDate: overPosition.date,
-          dragIndex: activePosition.index,
-          hoverIndex: overPosition.index,
-        });
-      }
-    } else {
-      // 跨天移動
-      moveDetailToNewPosition({
-        sourceDate: activePosition.date,
-        targetDate: overPosition.date,
-        dragIndex: activePosition.index,
-        hoverIndex: overPosition.index,
-      });
-    }
+    moveToOtherIndex({
+      detailId: active.id as string,
+      targetId: over.id as string,
+      date: activeContainer,
+    });
   };
 
   // 自動捲動到今天日期
@@ -173,92 +177,122 @@ const TripItem = () => {
 
   if (!tripItems) return <Loading />;
 
-  // 收集所有 detail 的 id，用於統一的 SortableContext
-  const allDetailIds = tripItems.flatMap((tripItem) =>
-    tripItem.details.map((detail) => detail.id)
-  );
-
   return (
     <DndContext
-      sensors={sensors}
       collisionDetection={closestCorners}
+      onDragStart={handleDragStart}
+      onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
-      <SortableContext
-        items={allDetailIds}
-        strategy={verticalListSortingStrategy}
-      >
-        <div className='min-h-screen bg-gray-50'>
-          <TripHeader name={tripName} days={tripItems.length} />
+      <div className='min-h-screen bg-gray-50'>
+        <TripHeader name={tripName} days={tripItems.length} />
 
-          {/* 行程內容 */}
-          <div className='p-4 space-y-6 pb-24'>
-            {tripItems.map((tripItem, dayIndex) => {
-              return (
-                <div
-                  key={tripItem.date}
-                  ref={(el) => {
-                    dateRefs.current[tripItem.date] = el;
-                  }}
-                  className='bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden'
-                >
-                  {/* 日期標題區塊 */}
-                  <TripItemHeader tripItem={tripItem} day={dayIndex + 1} />
+        {/* 行程內容 */}
+        <div className='p-4 space-y-6 pb-24'>
+          {tripItems.map((tripItem, dayIndex) => {
+            return (
+              <div
+                key={tripItem.date}
+                ref={(el) => {
+                  dateRefs.current[tripItem.date] = el;
+                }}
+              >
+                <DroppableContainer id={tripItem.date}>
+                  <SortableContext items={tripItem.details.map((d) => d.id)}>
+                    {/* 日期標題區塊 */}
+                    <TripItemHeader tripItem={tripItem} day={dayIndex + 1} />
 
-                  <div id={tripItem.date} className='p-6 min-h-[100px]'>
-                    {tripItem.details.length ? (
-                      <div className='relative'>
-                        {/* 連續的時間軸線 */}
-                        <div className='absolute left-[18px] top-14 bottom-14 w-0.5 bg-gray-300' />
+                    <div id={tripItem.date} className='p-6 min-h-[100px]'>
+                      {tripItem.details.length ? (
+                        <div className='relative'>
+                          {/* 連續的時間軸線 */}
+                          <div className='absolute left-[18px] top-14 bottom-14 w-0.5 bg-gray-300' />
 
-                        <div className='space-y-0'>
-                          {tripItem.details.map((detail) => (
-                            <div
-                              key={detail.id}
-                              className='flex items-stretch space-x-4 relative pb-6 last:pb-0'
-                            >
-                              {/* 時間軸點 */}
-                              <TimelineNode detail={detail} />
+                          <div className='space-y-0'>
+                            {tripItem.details.map((detail) => (
+                              <div
+                                key={detail.id}
+                                className='flex items-stretch space-x-4 relative pb-6 last:pb-0'
+                              >
+                                {/* 時間軸點 */}
+                                <TimelineNode detail={detail} />
 
-                              {/* 行程內容卡片 */}
-                              <DraggableTripItemCard
-                                detail={detail}
-                                onEdit={handleEditDetail}
-                                onDelete={handleDelete}
-                              />
-                            </div>
-                          ))}
+                                {/* 行程內容卡片 */}
+                                <DraggableTripItemCard
+                                  detail={detail}
+                                  onEdit={handleEditDetail}
+                                  onDelete={handleDelete}
+                                />
+                              </div>
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    ) : (
-                      <>
-                        <Test />
+                      ) : (
                         <Empty />
-                      </>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* 浮動新增按鈕 */}
-          <FloatButton onClick={() => setIsShowItemModal(true)} />
-
-          {/* 行程項目詳情彈窗 */}
-          {isShowItemModal && (
-            <TripDetailModal
-              itemData={editingDetail}
-              dateOptions={dateOptions}
-              mode={editingDetail ? 'edit' : 'create'}
-              onClose={handleCloseItemModal}
-              onSubmit={handleSubmit}
-            />
-          )}
+                      )}
+                    </div>
+                  </SortableContext>
+                </DroppableContainer>
+              </div>
+            );
+          })}
         </div>
-      </SortableContext>
+
+        {/* 浮動新增按鈕 */}
+        <FloatButton onClick={() => setIsShowItemModal(true)} />
+
+        {/* 行程項目詳情彈窗 */}
+        {isShowItemModal && (
+          <TripDetailModal
+            itemData={editingDetail}
+            dateOptions={dateOptions}
+            mode={editingDetail ? 'edit' : 'create'}
+            onClose={handleCloseItemModal}
+            onSubmit={handleSubmit}
+          />
+        )}
+      </div>
+
+      {/* dragOverlay 讓拖曳時更順 */}
+      <DragOverlay>
+        {activeId ? (
+          <div className='relative flex items-center w-full'>
+            <div className='flex w-full bg-gray-50 rounded-xl p-4 m-0 shadow-lg cursor-pointer opacity-90 transform'>
+              <div className='w-full'>
+                <div className='flex items-center justify-between space-x-2 mb-2'>
+                  <h3 className='font-semibold text-gray-800'>
+                    {getActiveDetail()?.title || 'Dragging...'}
+                  </h3>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : null}
+      </DragOverlay>
     </DndContext>
   );
 };
 
 export default TripItem;
+
+const DroppableContainer = ({
+  id,
+  children,
+}: {
+  id: string;
+  children: React.ReactNode;
+}) => {
+  const { setNodeRef, isOver } = useDroppable({ id });
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={{
+        border: `2px solid ${isOver ? '#228be6' : '#aaa'}`,
+      }}
+      className='bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden'
+    >
+      {children}
+    </div>
+  );
+};

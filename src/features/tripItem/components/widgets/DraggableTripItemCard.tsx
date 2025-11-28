@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useSortable } from '@dnd-kit/sortable';
+import { useSortable, defaultAnimateLayoutChanges } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import MapButton from '../../../../components/units/MapButton';
 import DeleteButton from '../../../../components/units/DeleteButton';
@@ -26,6 +26,7 @@ const DraggableTripItemCard = ({
     isDragging,
   } = useSortable({
     id: detail.id,
+    animateLayoutChanges: defaultAnimateLayoutChanges,
   });
 
   const style = {
