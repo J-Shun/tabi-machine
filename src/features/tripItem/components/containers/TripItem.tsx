@@ -104,8 +104,6 @@ const TripItem = () => {
 
     // 移往不同容器時，重新排序
     if (activeContainer === overContainer) return;
-    console.log('over');
-
     moveToOtherDate({
       detailId: active.id as string,
       fromDate: activeContainer,
@@ -125,8 +123,6 @@ const TripItem = () => {
 
     // 在同一容器內重新排序
     if (activeContainer !== overContainer) return;
-    console.log('end');
-
     moveToOtherIndex({
       detailId: active.id as string,
       targetId: over.id as string,
