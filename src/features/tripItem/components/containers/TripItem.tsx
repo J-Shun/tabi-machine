@@ -282,14 +282,11 @@ const DroppableContainer = ({
   id: string;
   children: React.ReactNode;
 }) => {
-  const { setNodeRef, isOver } = useDroppable({ id });
+  const { setNodeRef } = useDroppable({ id });
 
   return (
     <div
       ref={setNodeRef}
-      style={{
-        border: `2px solid ${isOver ? '#228be6' : '#aaa'}`,
-      }}
       className='bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden'
     >
       {children}
