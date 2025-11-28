@@ -59,3 +59,12 @@ export const getTypeColor = (type: string) => {
       return 'bg-gray-500';
   }
 };
+
+// 判斷是否為今天
+export const isToday = (date: string) => {
+  const today = new Date();
+  const todayString = `${today.getFullYear()}/${String(
+    today.getMonth() + 1
+  ).padStart(2, '0')}/${String(today.getDate()).padStart(2, '0')}`;
+  return date === todayString;
+};

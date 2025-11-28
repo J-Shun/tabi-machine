@@ -3,7 +3,6 @@ import { useNavigate } from '@tanstack/react-router';
 import { useParams } from '@tanstack/react-router';
 import {
   DndContext,
-  DragOverlay,
   PointerSensor,
   useSensor,
   useSensors,
@@ -13,15 +12,14 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { createPortal } from 'react-dom';
 import useTripItem from '../../hooks/useTripItem';
 import TripDetailModal from '../widgets/TripDetailModal';
 import Loading from '../../../../components/units/Loading';
 import DraggableTripItemCard from '../widgets/DraggableTripItemCard';
 import Empty from '../units/Empty';
-import { getTypeColor } from '../../../../helpers';
+import { getTypeColor, isToday } from '../../../../helpers';
 
-import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core';
+import type { DragEndEvent } from '@dnd-kit/core';
 import type { TripDetail } from '../../../../types';
 
 const TripItem = () => {
@@ -41,7 +39,6 @@ const TripItem = () => {
 
   const [isShowItemModal, setIsShowItemModal] = useState(false);
   const [editingDetail, setEditingDetail] = useState<TripDetail | null>(null);
-  const [activeDetail, setActiveDetail] = useState<TripDetail | null>(null);
 
   const hasScrolledToToday = useRef(false);
 
@@ -61,15 +58,6 @@ const TripItem = () => {
 
   const handleBack = () => {
     navigate({ to: '/' });
-  };
-
-  // 判斷是否為今天
-  const isToday = (date: string) => {
-    const today = new Date();
-    const todayString = `${today.getFullYear()}/${String(
-      today.getMonth() + 1
-    ).padStart(2, '0')}/${String(today.getDate()).padStart(2, '0')}`;
-    return date === todayString;
   };
 
   const handleCloseItemModal = () => {
@@ -116,20 +104,9 @@ const TripItem = () => {
     return null;
   };
 
-  // 拖拽開始
-  const handleDragStart = (event: DragStartEvent) => {
-    const { active } = event;
-    const position = findDetailPosition(active.id as string);
-
-    if (position) {
-      setActiveDetail(position.detail);
-    }
-  };
-
   // 拖拽結束
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
-    setActiveDetail(null);
 
     if (!over || !tripItems) return;
 
@@ -209,7 +186,6 @@ const TripItem = () => {
     <DndContext
       sensors={sensors}
       collisionDetection={closestCorners}
-      onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
       <SortableContext
@@ -327,27 +303,6 @@ const TripItem = () => {
           )}
         </div>
       </SortableContext>
-
-      {/* 拖拽預覽 */}
-      {createPortal(
-        <DragOverlay>
-          {activeDetail ? (
-            <div className='flex w-full bg-gray-50 rounded-xl p-4 shadow-lg border-2 border-blue-300 opacity-90'>
-              <div className='w-full'>
-                <div className='flex items-center justify-between space-x-2 mb-2'>
-                  <h3 className='font-semibold text-gray-800'>
-                    {activeDetail.title}
-                  </h3>
-                </div>
-                <div className='text-sm text-gray-600'>
-                  {activeDetail.location}
-                </div>
-              </div>
-            </div>
-          ) : null}
-        </DragOverlay>,
-        document.body
-      )}
     </DndContext>
   );
 };
