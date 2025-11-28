@@ -1,11 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams } from '@tanstack/react-router';
-import {
-  DndContext,
-  closestCorners,
-  useDroppable,
-  DragOverlay,
-} from '@dnd-kit/core';
+import { DndContext, closestCorners, DragOverlay } from '@dnd-kit/core';
 import { SortableContext } from '@dnd-kit/sortable';
 import useTripItem from '../../hooks/useTripItem';
 import TripDetailModal from '../widgets/TripDetailModal';
@@ -15,6 +10,7 @@ import FloatButton from '../../../../components/units/FloatButton';
 import Empty from '../units/Empty';
 import TripHeader from '../widgets/TripHeader';
 import TripItemHeader from '../widgets/TripItemHeader';
+import DroppableContainer from '../widgets/DroppableContainer';
 
 import type {
   DragEndEvent,
@@ -274,22 +270,3 @@ const TripItem = () => {
 };
 
 export default TripItem;
-
-const DroppableContainer = ({
-  id,
-  children,
-}: {
-  id: string;
-  children: React.ReactNode;
-}) => {
-  const { setNodeRef } = useDroppable({ id });
-
-  return (
-    <div
-      ref={setNodeRef}
-      className='bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden'
-    >
-      {children}
-    </div>
-  );
-};
