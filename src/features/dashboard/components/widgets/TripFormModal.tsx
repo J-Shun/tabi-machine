@@ -26,6 +26,7 @@ const TripFormModal = ({ tripData, mode, onClose, onSubmit }: Props) => {
   const [isClosing, setIsClosing] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
+  const datePickerRef = useRef<HTMLDivElement>(null);
 
   const [showDatePicker, setShowDatePicker] = useState(false);
 
@@ -302,6 +303,27 @@ const TripFormModal = ({ tripData, mode, onClose, onSubmit }: Props) => {
     }
   }, [isClosing]);
 
+  // 點擊外部關閉日期選擇器
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        showDatePicker &&
+        datePickerRef.current &&
+        !datePickerRef.current.contains(event.target as Node)
+      ) {
+        setShowDatePicker(false);
+      }
+    };
+
+    if (showDatePicker) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showDatePicker]);
+
   return (
     <div
       className={`fixed inset-0 flex items-end justify-center z-50 p-0 transition-all duration-300 ease-out ${
@@ -385,7 +407,10 @@ const TripFormModal = ({ tripData, mode, onClose, onSubmit }: Props) => {
 
               {/* 日期選擇器 */}
               {showDatePicker && (
-                <div className='mt-4 p-4 bg-gray-50 rounded-2xl border border-gray-200'>
+                <div
+                  className='mt-4 p-4 bg-gray-50 rounded-2xl border border-gray-200'
+                  ref={datePickerRef}
+                >
                   <div className='flex justify-between items-center mb-3'>
                     <span className='text-sm font-medium text-gray-700'>
                       選擇旅行日期
