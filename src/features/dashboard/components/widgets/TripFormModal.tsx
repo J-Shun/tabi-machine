@@ -115,7 +115,8 @@ const TripFormModal = ({ tripData, mode, onClose, onSubmit }: Props) => {
     setIsClosing(true);
     setIsVisible(false);
     if (modalRef.current) {
-      modalRef.current.style.transform = 'translateY(100%)';
+      modalRef.current.style.opacity = '0';
+      modalRef.current.style.transform = 'scale(0.95)';
     }
     setTimeout(() => {
       onClose();
@@ -139,14 +140,15 @@ const TripFormModal = ({ tripData, mode, onClose, onSubmit }: Props) => {
 
   // 入場動畫
   useEffect(() => {
-    // 元件載入後立即觸發背景動畫
     setIsVisible(true);
 
     if (modalRef.current && !isClosing) {
-      modalRef.current.style.transform = 'translateY(100%)';
+      modalRef.current.style.opacity = '0';
+      modalRef.current.style.transform = 'scale(0.95)';
       requestAnimationFrame(() => {
         if (modalRef.current) {
-          modalRef.current.style.transform = 'translateY(0px)';
+          modalRef.current.style.opacity = '1';
+          modalRef.current.style.transform = 'scale(1)';
         }
       });
     }
@@ -175,7 +177,7 @@ const TripFormModal = ({ tripData, mode, onClose, onSubmit }: Props) => {
 
   return (
     <div
-      className={`fixed inset-0 flex items-end justify-center z-50 p-0 transition-all duration-300 ease-out ${
+      className={`fixed inset-0 flex items-center justify-center z-50 p-4 transition-all duration-300 ease-out ${
         isVisible
           ? 'bg-black/60 backdrop-blur-sm'
           : 'bg-black/0 backdrop-blur-none'
@@ -184,8 +186,8 @@ const TripFormModal = ({ tripData, mode, onClose, onSubmit }: Props) => {
     >
       <div
         ref={modalRef}
-        className='bg-white rounded-t-3xl w-full max-w-md shadow-2xl transition-transform duration-300 ease-out'
-        style={{ transform: 'translateY(100%)' }}
+        className='bg-white rounded-3xl w-full max-w-md max-h-[90vh] shadow-2xl transition-all duration-300 ease-out overflow-hidden'
+        style={{ opacity: '0', transform: 'scale(0.95)' }}
       >
         {/* 標題區域 */}
         <div className='px-6 py-4 border-b border-gray-100'>
@@ -273,7 +275,7 @@ const TripFormModal = ({ tripData, mode, onClose, onSubmit }: Props) => {
         </div>
 
         {/* 底部按鈕 */}
-        <div className='p-6 bg-gray-50 rounded-t-2xl border-t border-gray-100'>
+        <div className='p-6 bg-gray-50 rounded-b-3xl border-t border-gray-100'>
           <div className='flex space-x-3'>
             <button
               type='button'
