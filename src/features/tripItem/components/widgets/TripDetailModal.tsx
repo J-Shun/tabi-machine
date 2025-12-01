@@ -34,9 +34,6 @@ const TripDetailModal = ({
     notes: itemData?.notes || '',
   });
 
-  const [isDragging, setIsDragging] = useState(false);
-  const [startY, setStartY] = useState(0);
-  const [currentY, setCurrentY] = useState(0);
   const [isClosing, setIsClosing] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
@@ -48,7 +45,8 @@ const TripDetailModal = ({
     setIsClosing(true);
     setIsVisible(false);
     if (modalRef.current) {
-      modalRef.current.style.transform = 'translateY(100%)';
+      modalRef.current.style.opacity = '0';
+      modalRef.current.style.transform = 'scale(0.95)';
     }
     setTimeout(() => {
       onClose();
@@ -63,92 +61,6 @@ const TripDetailModal = ({
     }
   };
 
-  // 觸控滑動處理
-  const handleTouchStart = (e: React.TouchEvent) => {
-    if (isClosing) return;
-    setIsDragging(true);
-    setStartY(e.touches[0].clientY);
-    setCurrentY(e.touches[0].clientY);
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (!isDragging || isClosing) return;
-
-    const deltaY = e.touches[0].clientY - startY;
-    setCurrentY(e.touches[0].clientY);
-
-    // 只允許向下拖拉
-    if (deltaY > 0 && modalRef.current) {
-      modalRef.current.style.transform = `translateY(${deltaY}px)`;
-    }
-  };
-
-  const handleTouchEnd = () => {
-    if (!isDragging || isClosing) return;
-
-    const deltaY = currentY - startY;
-    setIsDragging(false);
-
-    if (!modalRef.current) return;
-
-    // 如果拖拉距離超過 100px，就關閉彈窗，否則回到原位
-    if (deltaY > 100) {
-      handleClose();
-    } else {
-      modalRef.current.style.transform = 'translateY(0px)';
-    }
-  };
-
-  // 滑鼠事件處理（桌面端支援）
-  const handleMouseDown = (e: React.MouseEvent) => {
-    if (isClosing) return;
-    setIsDragging(true);
-    setStartY(e.clientY);
-    setCurrentY(e.clientY);
-  };
-
-  const handleMouseMove = useCallback(
-    (e: MouseEvent) => {
-      if (!isDragging || isClosing) return;
-
-      const deltaY = e.clientY - startY;
-      setCurrentY(e.clientY);
-
-      if (deltaY > 0 && modalRef.current) {
-        modalRef.current.style.transform = `translateY(${deltaY}px)`;
-      }
-    },
-    [isDragging, startY, isClosing]
-  );
-
-  const handleMouseUp = useCallback(() => {
-    if (!isDragging || isClosing) return;
-
-    const deltaY = currentY - startY;
-    setIsDragging(false);
-
-    if (!modalRef.current) return;
-
-    if (deltaY > 100) {
-      handleClose();
-    } else {
-      modalRef.current.style.transform = 'translateY(0px)';
-    }
-  }, [isDragging, isClosing, currentY, startY, handleClose]);
-
-  // 滑鼠事件監聽器
-  useEffect(() => {
-    if (isDragging) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
-    }
-
-    return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, [isDragging, startY, currentY, handleMouseMove, handleMouseUp]);
-
   // 背景點擊關閉
   const handleBackdropClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget && !isClosing) {
@@ -158,14 +70,15 @@ const TripDetailModal = ({
 
   // 入場動畫
   useEffect(() => {
-    // 元件載入後立即觸發背景動畫
     setIsVisible(true);
 
     if (modalRef.current && !isClosing) {
-      modalRef.current.style.transform = 'translateY(100%)';
+      modalRef.current.style.opacity = '0';
+      modalRef.current.style.transform = 'scale(0.95)';
       requestAnimationFrame(() => {
         if (modalRef.current) {
-          modalRef.current.style.transform = 'translateY(0px)';
+          modalRef.current.style.opacity = '1';
+          modalRef.current.style.transform = 'scale(1)';
         }
       });
     }
@@ -173,7 +86,7 @@ const TripDetailModal = ({
 
   return (
     <div
-      className={`fixed inset-0 flex items-end justify-center z-50 p-0 transition-all duration-300 ease-out ${
+      className={`fixed inset-0 flex items-center justify-center z-50 p-4 transition-all duration-300 ease-out ${
         isVisible
           ? 'bg-black/60 backdrop-blur-sm'
           : 'bg-black/0 backdrop-blur-none'
@@ -182,21 +95,9 @@ const TripDetailModal = ({
     >
       <div
         ref={modalRef}
-        className='bg-white rounded-t-3xl w-full max-w-md shadow-2xl transition-transform duration-300 ease-out'
-        style={{ transform: 'translateY(100%)' }}
+        className='bg-white rounded-3xl w-full max-w-md max-h-[90vh] shadow-2xl transition-all duration-300 ease-out overflow-hidden'
+        style={{ opacity: '0', transform: 'scale(0.95)' }}
       >
-        {/* 可拖拉的把手區域 */}
-        <div
-          className='flex justify-center pt-3 pb-2 cursor-grab active:cursor-grabbing'
-          style={{ touchAction: 'none' }} // 禁用所有觸控手勢
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
-          onMouseDown={handleMouseDown}
-        >
-          <div className='w-10 h-1 bg-gray-300 rounded-full'></div>
-        </div>
-
         {/* 標題區域 */}
         <div className='px-6 py-4 border-b border-gray-100'>
           <div className='text-center'>
@@ -222,7 +123,7 @@ const TripDetailModal = ({
               <select
                 value={form.date}
                 onChange={(e) => setForm({ ...form, date: e.target.value })}
-                className='w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition-all'
+                className='w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition-all'
                 required
               >
                 {dateOptions.map((option, index) => (
@@ -245,7 +146,7 @@ const TripDetailModal = ({
                 type='text'
                 value={form.title}
                 onChange={(e) => setForm({ ...form, title: e.target.value })}
-                className='w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition-all'
+                className='w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition-all'
                 placeholder='例：東京晴空塔'
                 required
               />
@@ -266,7 +167,7 @@ const TripDetailModal = ({
                     type: e.target.value as TripDetail['type'],
                   })
                 }
-                className='w-full px-3 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition-all'
+                className='w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition-all'
               >
                 {typeOptions.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -287,7 +188,7 @@ const TripDetailModal = ({
                 type='text'
                 value={form.location}
                 onChange={(e) => setForm({ ...form, location: e.target.value })}
-                className='w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition-all'
+                className='w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition-all'
                 placeholder='請填入地點名稱或地址...'
               />
             </div>
@@ -302,7 +203,7 @@ const TripDetailModal = ({
               <textarea
                 value={form.notes}
                 onChange={(e) => setForm({ ...form, notes: e.target.value })}
-                className='w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition-all resize-none'
+                className='w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition-all resize-none'
                 rows={3}
                 placeholder='記錄特別的注意事項或想法...'
               />
@@ -311,7 +212,7 @@ const TripDetailModal = ({
         </div>
 
         {/* 底部按鈕 */}
-        <div className='p-6 bg-gray-50 rounded-t-2xl border-t border-gray-100'>
+        <div className='p-6 bg-gray-50 rounded-b-3xl border-t border-gray-100'>
           <div className='flex space-x-3'>
             <button
               type='button'
