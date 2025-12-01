@@ -1,4 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { DayPicker } from 'react-day-picker';
+import 'react-day-picker/style.css';
+
 import type { Trip } from '../../../../types';
 
 interface Props {
@@ -24,7 +27,87 @@ const TripFormModal = ({ tripData, mode, onClose, onSubmit }: Props) => {
   const [isVisible, setIsVisible] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
 
+  const [showDatePicker, setShowDatePicker] = useState(false);
+
   const confirmText = mode === 'create' ? '建立行程' : '更新行程';
+
+  // 格式化日期顯示
+  const formatDateDisplay = (startDate: string, endDate: string) => {
+    if (!startDate && !endDate) {
+      return '請選擇旅行日期';
+    }
+
+    if (startDate && !endDate) {
+      return `${new Date(startDate).toLocaleDateString('zh-TW')} - 請選擇結束日期`;
+    }
+
+    if (startDate && endDate) {
+      const start = new Date(startDate).toLocaleDateString('zh-TW');
+      const end = new Date(endDate).toLocaleDateString('zh-TW');
+      const days =
+        Math.ceil(
+          (new Date(endDate).getTime() - new Date(startDate).getTime()) /
+            (1000 * 60 * 60 * 24)
+        ) + 1;
+      return `${start} - ${end} (${days} 天)`;
+    }
+
+    return '請選擇旅行日期';
+  };
+
+  const formatDate = (date: Date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}/${month}/${day}`;
+  };
+
+  // 處理日期選擇
+  const handleDateSelect = (range: { from?: Date; to?: Date } | undefined) => {
+    // 沒有開始日期就設定開始日期
+    if (!form.startDate && range?.from) {
+      const formatted = formatDate(range.from);
+      setForm((prev) => ({
+        ...prev,
+        startDate: formatted,
+      }));
+    }
+
+    // 如果有開始日期，但是設定日期早於開始日期，就更新開始日期
+    else if (
+      form.startDate &&
+      range?.from &&
+      new Date(formatDate(range.from)) <
+        new Date(form.startDate.replace(/-/g, '/'))
+    ) {
+      const formatted = formatDate(range.from);
+      setForm((prev) => ({
+        ...prev,
+        startDate: formatted,
+      }));
+    }
+
+    // 有開始日期但沒有結束日期就設定結束日期
+    else if (form.startDate && !form.endDate && range?.to) {
+      const formatted = formatDate(range.to);
+      setForm((prev) => ({
+        ...prev,
+        endDate: formatted,
+      }));
+      setShowDatePicker(false);
+    }
+  };
+
+  // 點擊日期顯示框
+  const handleDateDisplayClick = () => {
+    // 重置為從開始日期選擇
+    setForm((prev) => ({
+      ...prev,
+      startDate: '',
+      endDate: '',
+    }));
+    setShowDatePicker(!showDatePicker);
+  };
 
   // 關閉動畫處理
   const handleClose = useCallback(() => {
@@ -273,7 +356,7 @@ const TripFormModal = ({ tripData, mode, onClose, onSubmit }: Props) => {
                 type='text'
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
-                className='w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition-all'
+                className='w-full px-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition-all'
                 placeholder='例：東京櫻花之旅'
                 required
               />
@@ -287,37 +370,47 @@ const TripFormModal = ({ tripData, mode, onClose, onSubmit }: Props) => {
                 </label>
                 <span className='text-red-400'>*</span>
               </div>
-              <div className='grid grid-cols-2 gap-3'>
-                <div>
-                  <label className='block text-sm text-gray-600 mb-2'>
-                    出發日
-                  </label>
-                  <input
-                    type='date'
-                    value={form.startDate}
-                    onChange={(e) =>
-                      setForm({ ...form, startDate: e.target.value })
-                    }
-                    className='w-full px-3 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition-all text-sm'
-                    required
-                  />
-                </div>
-                <div>
-                  <label className='block text-sm text-gray-600 mb-2'>
-                    回程日
-                  </label>
-                  <input
-                    type='date'
-                    value={form.endDate}
-                    onChange={(e) =>
-                      setForm({ ...form, endDate: e.target.value })
-                    }
-                    className='w-full px-3 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition-all text-sm'
-                    min={form.startDate}
-                    required
-                  />
+
+              {/* 日期顯示框 */}
+              <div
+                onClick={handleDateDisplayClick}
+                className={`w-full px-4 py-3 border border-gray-200 rounded-2xl cursor-pointer transition-all ${showDatePicker ? 'ring-2 ring-blue-400' : ''}`}
+              >
+                <div className='flex items-center justify-between'>
+                  <span className={`text-gray-600`}>
+                    {formatDateDisplay(form.startDate, form.endDate)}
+                  </span>
                 </div>
               </div>
+
+              {/* 日期選擇器 */}
+              {showDatePicker && (
+                <div className='mt-4 p-4 bg-gray-50 rounded-2xl border border-gray-200'>
+                  <div className='flex justify-between items-center mb-3'>
+                    <span className='text-sm font-medium text-gray-700'>
+                      選擇旅行日期
+                    </span>
+                    <button
+                      type='button'
+                      onClick={() => setShowDatePicker(false)}
+                      className='text-gray-400 hover:text-gray-600 w-6 h-6 flex items-center justify-center'
+                    >
+                      ✕
+                    </button>
+                  </div>
+                  <DayPicker
+                    mode='range'
+                    selected={{
+                      from: form.startDate
+                        ? new Date(form.startDate)
+                        : undefined,
+                      to: form.endDate ? new Date(form.endDate) : undefined,
+                    }}
+                    onSelect={handleDateSelect}
+                    className='mx-auto'
+                  />
+                </div>
+              )}
             </div>
 
             {/* 封面照片 */}

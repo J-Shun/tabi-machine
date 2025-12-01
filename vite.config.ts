@@ -25,7 +25,12 @@ export default defineConfig(({ mode }) => {
     ],
     optimizeDeps: {
       force: true, // 強制重新預構建依賴
-      include: ['@dnd-kit/core', '@dnd-kit/sortable', '@dnd-kit/utilities'],
+      include: [
+        '@dnd-kit/core',
+        '@dnd-kit/sortable',
+        '@dnd-kit/utilities',
+        'react-day-picker',
+      ],
     },
     server: hasCerts
       ? {
