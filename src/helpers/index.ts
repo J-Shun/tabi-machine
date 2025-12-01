@@ -55,6 +55,8 @@ export const getTypeColor = (type: string) => {
       return 'bg-green-500';
     case 'transport':
       return 'bg-purple-500';
+    case 'accommodation':
+      return 'bg-pink-500';
     default:
       return 'bg-gray-500';
   }

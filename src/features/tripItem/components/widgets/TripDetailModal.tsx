@@ -12,6 +12,7 @@ interface Props {
 
 const typeOptions = [
   { value: 'attraction', label: '景點' },
+  { value: 'accommodation', label: '住宿' },
   { value: 'meal', label: '美食' },
   { value: 'shopping', label: '購物' },
   { value: 'transport', label: '交通' },
