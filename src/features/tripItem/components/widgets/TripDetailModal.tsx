@@ -211,24 +211,6 @@ const TripDetailModal = ({
         {/* 表單內容 */}
         <div className='max-h-[60vh] overflow-y-auto'>
           <form onSubmit={handleSubmit} className='p-6 space-y-6'>
-            {/* 項目標題 */}
-            <div>
-              <div className='flex items-center space-x-2 mb-3'>
-                <label className='text-base font-semibold text-gray-800'>
-                  項目名稱
-                </label>
-                <span className='text-red-400'>*</span>
-              </div>
-              <input
-                type='text'
-                value={form.title}
-                onChange={(e) => setForm({ ...form, title: e.target.value })}
-                className='w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition-all'
-                placeholder='例：東京晴空塔'
-                required
-              />
-            </div>
-
             {/* 日期選擇 */}
             <div>
               <div className='flex items-center space-x-2 mb-3'>
@@ -249,6 +231,24 @@ const TripDetailModal = ({
                   </option>
                 ))}
               </select>
+            </div>
+
+            {/* 項目標題 */}
+            <div>
+              <div className='flex items-center space-x-2 mb-3'>
+                <label className='text-base font-semibold text-gray-800'>
+                  項目名稱
+                </label>
+                <span className='text-red-400'>*</span>
+              </div>
+              <input
+                type='text'
+                value={form.title}
+                onChange={(e) => setForm({ ...form, title: e.target.value })}
+                className='w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition-all'
+                placeholder='例：東京晴空塔'
+                required
+              />
             </div>
 
             {/* 類型 */}
