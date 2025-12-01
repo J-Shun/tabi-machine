@@ -228,16 +228,17 @@ const TripFormModal = ({ tripData, mode, onClose, onSubmit }: Props) => {
                 <span className='text-red-400'>*</span>
               </div>
 
-              {/* 日期顯示框 */}
-              <div
-                onClick={handleDateDisplayClick}
-                className={`relative w-full px-4 py-3 border border-gray-200 rounded-2xl cursor-pointer transition-all ${isShowDatePicker ? 'ring-2 ring-blue-400' : ''}`}
-                ref={datePickerRef}
-              >
-                <div className='flex items-center justify-between'>
-                  <span className={`text-gray-600`}>
-                    {formatDateDisplay(form.startDate, form.endDate)}
-                  </span>
+              <div className='relative' ref={datePickerRef}>
+                {/* 日期顯示框 */}
+                <div
+                  onClick={handleDateDisplayClick}
+                  className={`w-full px-4 py-3 border border-gray-200 rounded-2xl cursor-pointer transition-all ${isShowDatePicker ? 'ring-2 ring-blue-400' : ''}`}
+                >
+                  <div className='flex items-center justify-between'>
+                    <span className={`text-gray-600`}>
+                      {formatDateDisplay(form.startDate, form.endDate)}
+                    </span>
+                  </div>
                 </div>
 
                 {/* 日期選擇器 */}
