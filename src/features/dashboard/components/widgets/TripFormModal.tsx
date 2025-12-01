@@ -28,6 +28,8 @@ const TripFormModal = ({ tripData, mode, onClose, onSubmit }: Props) => {
 
   const [isShowDatePicker, setIsShowDatePicker] = useState(false);
 
+  const title = mode === 'create' ? '建立新行程' : '編輯行程';
+  const info = mode === 'create' ? '開始規劃你的精彩旅程' : '修改你的旅程規劃';
   const confirmText = mode === 'create' ? '建立行程' : '更新行程';
 
   // 格式化日期顯示
@@ -189,12 +191,8 @@ const TripFormModal = ({ tripData, mode, onClose, onSubmit }: Props) => {
         <div className='px-6 py-4 border-b border-gray-100'>
           <div className='text-center'>
             <div className='text-3xl mb-2'>✈️</div>
-            <h2 className='text-xl font-bold text-gray-800 mb-1'>
-              {mode === 'create' ? '建立新行程' : '編輯行程'}
-            </h2>
-            <p className='text-sm text-gray-500'>
-              {mode === 'create' ? '開始規劃你的精彩旅程' : '修改你的旅程規劃'}
-            </p>
+            <h2 className='text-xl font-bold text-gray-800 mb-1'>{title}</h2>
+            <p className='text-sm text-gray-500'>{info}</p>
           </div>
         </div>
 
@@ -204,9 +202,7 @@ const TripFormModal = ({ tripData, mode, onClose, onSubmit }: Props) => {
             {/* 行程名稱 */}
             <div>
               <div className='flex items-center space-x-2 mb-3'>
-                <label className='text-base font-semibold text-gray-800'>
-                  行程名稱
-                </label>
+                <label className='font-semibold text-gray-800'>行程名稱</label>
                 <span className='text-red-400'>*</span>
               </div>
               <input
@@ -222,9 +218,7 @@ const TripFormModal = ({ tripData, mode, onClose, onSubmit }: Props) => {
             {/* 旅行日期 */}
             <div>
               <div className='flex items-center space-x-2 mb-3'>
-                <label className='text-base font-semibold text-gray-800'>
-                  旅行日期
-                </label>
+                <label className=' font-semibold text-gray-800'>旅行日期</label>
                 <span className='text-red-400'>*</span>
               </div>
 
@@ -263,9 +257,7 @@ const TripFormModal = ({ tripData, mode, onClose, onSubmit }: Props) => {
             {/* 封面照片 */}
             <div>
               <div className='flex items-center space-x-2 mb-3'>
-                <label className='text-base font-semibold text-gray-800'>
-                  封面照片
-                </label>
+                <label className='font-semibold text-gray-800'>封面照片</label>
               </div>
 
               {/* 圖片預覽或上傳區域 */}
