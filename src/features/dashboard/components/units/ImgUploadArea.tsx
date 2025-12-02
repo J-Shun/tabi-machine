@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 const ImgUploadArea = ({
   img,
   onCancel,
@@ -7,6 +9,10 @@ const ImgUploadArea = ({
   onCancel: () => void;
   onUpload: (imgData: string) => void;
 }) => {
+  const [showUrlInput, setShowUrlInput] = useState(false);
+  const [urlInput, setUrlInput] = useState('');
+  const [isUrlError, setIsUrlError] = useState(false);
+
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -71,43 +77,131 @@ const ImgUploadArea = ({
       reader.readAsDataURL(file);
     }
   };
+
+  const deletePreview = () => {
+    onCancel();
+    setShowUrlInput(false);
+    setUrlInput('');
+    setIsUrlError(false);
+  };
+
+  const handleUrlSubmit = () => {
+    // 驗證：必須是網址
+    if (!urlInput || !/^https?:\/\/.+/.test(urlInput)) {
+      alert('請輸入有效的圖片網址');
+      return;
+    }
+    onUpload(urlInput);
+    setShowUrlInput(false);
+    setUrlInput('');
+  };
+
   return (
     <div className='relative'>
       {img && (
         <div className='relative'>
-          <img
-            src={img}
-            alt='封面預覽'
-            className='w-full aspect-square object-cover rounded-2xl'
-          />
+          {!isUrlError && (
+            <img
+              src={img}
+              alt='封面預覽'
+              className='w-full aspect-square object-cover rounded-2xl'
+              onError={() => {
+                setIsUrlError(true);
+              }}
+            />
+          )}
+          {isUrlError && (
+            <div className='w-full aspect-square flex items-center justify-center bg-gray-100 rounded-2xl'>
+              <span className='text-gray-500'>圖片網址失效或連結錯誤</span>
+            </div>
+          )}
           <button
             type='button'
-            onClick={onCancel}
-            className='absolute top-2 right-2 w-8 h-8 bg-black/50 text-white rounded-full flex items-center justify-center hover:bg-black/70'
+            onClick={deletePreview}
+            className='absolute top-2 right-2 w-8 h-8 cursor-pointer bg-black/50 text-white rounded-full flex items-center justify-center hover:bg-black/70'
           >
             ✕
           </button>
         </div>
       )}
 
-      {!img && (
-        <label className='block w-full aspect-square border-2 border-dashed border-gray-300 rounded-2xl cursor-pointer hover:border-blue-400 hover:bg-blue-50/50 transition-all'>
-          <div className='flex flex-col items-center justify-center h-full'>
-            <span className='text-sm text-gray-600 font-medium'>
-              點擊上傳照片
-            </span>
-            <span className='text-xs text-gray-400 mt-1'>
-              建議大小不超過 500KB
-            </span>
-            <span className='text-xs text-gray-400'>支援 JPG、PNG 格式</span>
+      {!img && !showUrlInput && (
+        <div className='block w-full aspect-square border-2 border-dashed border-gray-300 rounded-2xl'>
+          <div className='flex flex-col items-center justify-center h-full space-y-4'>
+            <div className='text-center mb-2'>
+              <span className='text-sm text-gray-600 font-medium block'>
+                上傳照片（選填）
+              </span>
+              <span className='text-xs text-gray-400 mt-1 block'>
+                建議大小不超過 500KB
+              </span>
+              <span className='text-xs text-gray-400'>支援 JPG、PNG 格式</span>
+            </div>
+
+            <div className='flex flex-col space-y-3 w-full max-w-xs px-4'>
+              <label className='py-2.5 px-5 rounded-lg cursor-pointer text-gray-600 border-2 border-dashed border-gray-300 text-center text-sm font-medium'>
+                選擇本地檔案
+                <input
+                  type='file'
+                  accept='image/jpeg,image/png,image/jpg'
+                  onChange={handleImageUpload}
+                  className='hidden'
+                />
+              </label>
+
+              <button
+                onClick={() => setShowUrlInput(true)}
+                className='py-2.5 px-5 rounded-lg cursor-pointer text-gray-600 border-2 border-dashed border-gray-300 text-sm font-medium'
+              >
+                輸入圖片網址
+              </button>
+            </div>
           </div>
-          <input
-            type='file'
-            accept='image/jpeg,image/png,image/jpg'
-            onChange={handleImageUpload}
-            className='hidden'
-          />
-        </label>
+        </div>
+      )}
+
+      {!img && showUrlInput && (
+        <div className='block w-full aspect-square border-2 border-dashed border-gray-300 rounded-2xl'>
+          <div className='flex flex-col items-center justify-center h-full space-y-4 p-6'>
+            <div className='text-center'>
+              <span className='text-sm text-gray-600 font-medium block'>
+                輸入圖片網址
+              </span>
+              <span className='text-xs text-gray-400 mt-1'>
+                支援 JPG、PNG、GIF、WebP 格式
+              </span>
+            </div>
+
+            <div className='w-full max-w-sm space-y-3'>
+              <input
+                type='url'
+                placeholder='https://example.com/image.jpg'
+                value={urlInput}
+                onChange={(e) => setUrlInput(e.target.value)}
+                className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm'
+              />
+
+              <div className='flex space-x-2'>
+                <button
+                  onClick={() => {
+                    setShowUrlInput(false);
+                    setUrlInput('');
+                  }}
+                  className='flex-1 bg-gray-400 text-white py-2 px-4 rounded-lg cursor-pointer hover:bg-gray-500 transition-colors text-sm font-medium'
+                >
+                  取消
+                </button>
+
+                <button
+                  onClick={handleUrlSubmit}
+                  className='flex-1 bg-blue-500 text-white py-2 px-4 rounded-lg cursor-pointer hover:bg-blue-600 transition-colors text-sm font-medium'
+                >
+                  確認
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
