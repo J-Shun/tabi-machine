@@ -6,7 +6,6 @@ import useTripItem from '../../hooks/useTripItem';
 import TripDetailModal from '../widgets/TripDetailModal';
 import Loading from '../../../../components/units/Loading';
 import DraggableTripItemCard from '../widgets/DraggableTripItemCard';
-import FloatButton from '../../../../components/units/FloatButton';
 import Empty from '../units/Empty';
 import TripHeader from '../widgets/TripHeader';
 import TripItemHeader from '../widgets/TripItemHeader';
@@ -51,6 +50,19 @@ const TripItem = () => {
 
   const handleEditDetail = (detail: TripDetail) => {
     setEditingDetail(detail);
+    setIsShowItemModal(true);
+  };
+
+  const handleAdd = ({ date }: { date: string }) => {
+    const emptyDetail: TripDetail = {
+      date,
+      id: '',
+      title: '',
+      location: '',
+      type: 'attraction',
+      notes: '',
+    };
+    setEditingDetail(emptyDetail);
     setIsShowItemModal(true);
   };
 
@@ -222,6 +234,29 @@ const TripItem = () => {
                       ) : (
                         <Empty />
                       )}
+
+                      {/* 在卡片底部新增按鈕 */}
+                      <div className='mt-4 pt-4 border-t border-gray-200'>
+                        <button
+                          onClick={() => handleAdd({ date: tripItem.date })}
+                          className='w-full py-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-blue-400 hover:text-blue-500 hover:bg-blue-50 transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer'
+                        >
+                          <svg
+                            className='w-5 h-5'
+                            fill='none'
+                            stroke='currentColor'
+                            viewBox='0 0 24 24'
+                          >
+                            <path
+                              strokeLinecap='round'
+                              strokeLinejoin='round'
+                              strokeWidth={2}
+                              d='M12 4v16m8-8H4'
+                            />
+                          </svg>
+                          新增行程項目
+                        </button>
+                      </div>
                     </div>
                   </SortableContext>
                 </DroppableContainer>
@@ -229,9 +264,6 @@ const TripItem = () => {
             );
           })}
         </div>
-
-        {/* 浮動新增按鈕 */}
-        <FloatButton onClick={() => setIsShowItemModal(true)} />
 
         {/* 行程項目詳情彈窗 */}
         {isShowItemModal && (
