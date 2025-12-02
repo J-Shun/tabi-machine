@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { DayPicker } from 'react-day-picker';
 import ImgUploadArea from '../units/ImgUploadArea';
 import 'react-day-picker/style.css';
+import { zhTW } from 'react-day-picker/locale';
 
 import type { Trip } from '../../../../types';
 
@@ -238,8 +239,9 @@ const TripFormModal = ({ tripData, mode, onClose, onSubmit }: Props) => {
 
                 {/* 日期選擇器 */}
                 {isShowDatePicker && (
-                  <div className='absolute left-0 right-0 z-10 mt-4 p-4 bg-gray-50 rounded-2xl border border-gray-200'>
+                  <div className='absolute left-0 right-0 z-10 w-full mt-4 p-4 bg-gray-50 rounded-2xl border border-gray-200'>
                     <DayPicker
+                      locale={zhTW}
                       mode='range'
                       selected={{
                         from: form.startDate
