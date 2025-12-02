@@ -219,7 +219,9 @@ const TripItem = () => {
                                 className='flex items-stretch space-x-4 relative pb-6 last:pb-0 min-w-0'
                               >
                                 {/* 時間軸點 */}
-                                <TimelineNode detail={detail} />
+                                {tripItem.details.length > 1 && (
+                                  <TimelineNode detail={detail} />
+                                )}
 
                                 {/* 行程內容卡片 */}
 
