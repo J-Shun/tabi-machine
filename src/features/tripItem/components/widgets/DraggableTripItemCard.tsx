@@ -60,14 +60,16 @@ const DraggableTripItemCard = ({
           ref={setNodeRef}
           style={style}
           onClick={handleClick}
-          className={`flex w-full bg-gray-50 rounded-xl p-4 m-0 shadow-sm cursor-pointer hover:bg-gray-100 transition-colors relative ${
+          className={`w-full min-w-0 flex flex-1 bg-gray-50 rounded-xl p-4 m-0 shadow-sm cursor-pointer hover:bg-gray-100 transition-colors relative ${
             isDragging ? 'opacity-50' : ''
           }`}
         >
           <div className='w-full'>
             <div className='flex items-center justify-between space-x-2 mb-2'>
               {/* 標題和地點 */}
-              <h3 className='font-semibold text-gray-800'>{detail.title}</h3>
+              <h3 className='font-semibold text-gray-800 whitespace-nowrap overflow-hidden text-ellipsis'>
+                {detail.title}
+              </h3>
 
               {/* 刪除按鈕 */}
               <DeleteButton onClick={handleDelete} />

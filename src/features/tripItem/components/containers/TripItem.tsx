@@ -216,17 +216,20 @@ const TripItem = () => {
                             {tripItem.details.map((detail) => (
                               <div
                                 key={detail.id}
-                                className='flex items-stretch space-x-4 relative pb-6 last:pb-0'
+                                className='flex items-stretch space-x-4 relative pb-6 last:pb-0 min-w-0'
                               >
                                 {/* 時間軸點 */}
                                 <TimelineNode detail={detail} />
 
                                 {/* 行程內容卡片 */}
-                                <DraggableTripItemCard
-                                  detail={detail}
-                                  onEdit={handleEditDetail}
-                                  onDelete={handleDelete}
-                                />
+
+                                <div className='flex-1 min-w-0'>
+                                  <DraggableTripItemCard
+                                    detail={detail}
+                                    onEdit={handleEditDetail}
+                                    onDelete={handleDelete}
+                                  />
+                                </div>
                               </div>
                             ))}
                           </div>
