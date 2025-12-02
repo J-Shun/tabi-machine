@@ -190,9 +190,8 @@ const TripFormModal = ({ tripData, mode, onClose, onSubmit }: Props) => {
         style={{ opacity: '0', transform: 'scale(0.95)' }}
       >
         {/* 標題區域 */}
-        <div className='px-6 py-4 border-b border-gray-100'>
+        <div className='p-6 border-b border-gray-100'>
           <div className='text-center'>
-            <div className='text-3xl mb-2'>✈️</div>
             <h2 className='text-xl font-bold text-gray-800 mb-1'>{title}</h2>
             <p className='text-sm text-gray-500'>{info}</p>
           </div>

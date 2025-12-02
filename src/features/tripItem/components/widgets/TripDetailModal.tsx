@@ -39,6 +39,7 @@ const TripDetailModal = ({
   const [isVisible, setIsVisible] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
 
+  const title = mode === 'create' ? '新增行程項目' : '編輯行程項目';
   const confirmText = mode === 'create' ? '新增項目' : '更新項目';
 
   // 關閉動畫處理
@@ -100,12 +101,9 @@ const TripDetailModal = ({
         style={{ opacity: '0', transform: 'scale(0.95)' }}
       >
         {/* 標題區域 */}
-        <div className='px-6 py-4 border-b border-gray-100'>
+        <div className='p-6 border-b border-gray-100'>
           <div className='text-center'>
-            <div className='text-3xl mb-2'>📝</div>
-            <h2 className='text-xl font-bold text-gray-800 mb-1'>
-              {mode === 'create' ? '新增行程項目' : '編輯行程項目'}
-            </h2>
+            <h2 className='text-xl font-bold text-gray-800 mb-1'>{title}</h2>
             <p className='text-sm text-gray-500'>記錄你的旅程細節</p>
           </div>
         </div>

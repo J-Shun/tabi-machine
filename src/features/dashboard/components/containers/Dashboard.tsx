@@ -48,12 +48,9 @@ const Dashboard = () => {
   return (
     <div className='min-h-screen bg-linear-to-br from-blue-50 to-indigo-100'>
       {/* 頂部區域 */}
-      <div className='pt-8 pb-6 px-6 bg-white/80 backdrop-blur-sm'>
-        <div className='text-center select-none'>
-          <div className='text-4xl mb-2'>✈️</div>
-          <h1 className='text-2xl font-bold text-gray-800 mb-1'>我的旅程</h1>
-          <p className='text-gray-600 text-sm'>開始規劃你的下一趟冒險</p>
-        </div>
+      <div className='pt-8 pb-6 px-6 text-center bg-white/80 backdrop-blur-sm'>
+        <h1 className='text-2xl font-bold text-gray-800 mb-1'>我的旅程</h1>
+        <p className='text-gray-600 text-sm'>開始規劃你的下一趟冒險</p>
       </div>
 
       {/* 新增行程按鈕 */}
